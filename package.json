@@ -1,0 +1,19 @@
+{
+  "name": "electronx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "JMJayasundara",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^19.1.6",
+    "mysql2": "^2.3.3"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.2"
+  }
+}
