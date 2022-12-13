@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const main_menu = require('./src/menu');
 const { readTable } = require('./src/data-model');
+const { checkPort } = require('./src/errors');
+const { SerialPort } = require('serialport');
 
 let mainWindow;
 let supv_menu;
@@ -26,6 +28,12 @@ function createWindow() {
         mainWindow.show();
         Menu.setApplicationMenu(null);
         supv_menu = new main_menu(mainWindow);
+
+        checkPort().then((ports)=>{
+            if(ports.length == 0){
+                mainWindow.webContents.send('state', "err");
+            }
+        });
     });
 
     mainWindow.loadFile(path.join(__dirname, '/template/index.html'));

@@ -14,6 +14,7 @@
     "mysql2": "^2.3.3"
   },
   "dependencies": {
+    "serialport": "^10.5.0",
     "sqlite3": "^5.1.2"
   }
 }

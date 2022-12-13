@@ -2,6 +2,7 @@ const { ipcRenderer } = require('electron');
 
 function hideall(){
     document.getElementById('login_container').style.display = 'none';
+    document.getElementById('error_container').style.display = 'none';
     document.getElementById('new_file_container').style.display = 'none';
     document.getElementById('create_jigs_container').style.display = 'none';
     document.getElementById('execute_container').style.display = 'none';
@@ -63,5 +64,10 @@ ipcRenderer.on("state", (event, sts)=>{
         hideall();
         document.body.style.background = null;
         document.getElementById('login_container').style.display = 'block';
+    }
+
+    else if(sts == 'err'){
+        hideall();
+        document.getElementById('error_container').style.display = 'block';
     }
 });
