@@ -1,7 +1,7 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const main_menu = require('./src/menu');
-const { readTable } = require('./src/data-model');
+const { readTable, createRow, updateRow, deleteRow } = require('./src/data-model');
 const { checkPort } = require('./src/errors');
 const { SerialPort } = require('serialport');
 
@@ -69,3 +69,57 @@ ipcMain.handle('login', (event, obj) => {
         });
     });
 });
+
+function showErr(error){
+    dialog.showErrorBox('Error', error.message, {
+        detail: error.stack
+    });
+};
+
+ipcMain.handle('getCrtlist', () => {
+    getCrtlist()
+});
+
+function getCrtlist() {
+    readTable("Files").then((data)=>{
+        return data
+    }).then((data)=>{
+        mainWindow.webContents.send('crtlist', data);
+    });
+};
+
+ipcMain.handle('saveCrtlist', (event, obj) => {
+    addCrtlist(obj)
+});
+
+function addCrtlist(obj) {
+    createRow("Files", obj)
+    .then((error)=>{
+        if (error) showErr(error);
+        getCrtlist();
+    });
+};
+
+ipcMain.handle('updateCrtlist', (event, obj) => {
+    updateCrtlist(obj)
+});
+
+function updateCrtlist(obj) {
+    updateRow("Files", obj)
+    .then((error)=>{
+        if (error) showErr(error);
+        getCrtlist();
+    });
+};
+
+ipcMain.handle('deleteCrtlist', (event, obj) => {
+    deleteCrtlist(obj)
+});
+
+function deleteCrtlist(obj) {
+    deleteRow("Files", obj)
+    .then((error)=>{
+        if (error) showErr(error);
+        getCrtlist();
+    });
+};

@@ -1,4 +1,55 @@
 const { ipcRenderer } = require('electron');
+var crtlist = null;
+
+window.onload = function () {
+    crtlist = document.getElementById("crtlist");
+    btnSave = document.getElementById("btnSave");
+    btnUpdate = document.getElementById("btnUpdate");
+    btnDelete = document.getElementById("btnDelete");
+    renderGetCrtlist();
+    btnSave.onclick = renderAddProduct;
+    btnUpdate.onclick = renderUpdateProduct;
+    btnDelete.onclick = renderDeleteProduct;
+};
+
+async function renderGetCrtlist() {
+    await ipcRenderer.invoke('getCrtlist');
+};
+
+async function renderAddProduct(e) {
+    e.preventDefault();
+    const obj = {
+        File_No: document.getElementById('FileNo11').value,
+        Item_Des: document.getElementById('ItemDescripition11').value,
+        Dra_No: document.getElementById('DrawingNo11').value,
+        Dra_Iss: document.getElementById('DrawingIssue11').value,
+        Jig_Sts: 'Work'
+    }
+    document.getElementById('FileNo11').value = ""
+    document.getElementById('ItemDescripition11').value = ""
+    document.getElementById('DrawingNo11').value = ""
+    document.getElementById('DrawingIssue11').value = ""
+    await ipcRenderer.invoke('saveCrtlist', obj)
+};
+
+async function renderUpdateProduct(e) {
+    e.preventDefault();
+    const obj = {
+        File_No: document.getElementById('FileNo11').value,
+        Item_Des: document.getElementById('ItemDescripition11').value,
+        Dra_No: document.getElementById('DrawingNo11').value,
+        Dra_Iss: document.getElementById('DrawingIssue11').value
+    }
+    await ipcRenderer.invoke('updateCrtlist', obj)
+};
+
+async function renderDeleteProduct(e) {
+    e.preventDefault();
+    const obj = {
+        File_No: document.getElementById('FileNo11').value
+    }
+    await ipcRenderer.invoke('deleteCrtlist', obj)
+};
 
 function hideall(){
     document.getElementById('login_container').style.display = 'none';
@@ -69,5 +120,38 @@ ipcRenderer.on("state", (event, sts)=>{
     else if(sts == 'err'){
         hideall();
         document.getElementById('error_container').style.display = 'block';
+    }
+});
+
+ipcRenderer.on('crtlist', (event, results) => {
+    let template = "";
+    const list = results;
+    list.forEach(element => {
+        template += `
+            <tr>
+            <tr>
+                <td>${element.File_No}</td>
+                <td>${element.Item_Des}</td>
+                <td>${element.Dra_No}</td>
+                <td>${element.Dra_Iss}</td>
+                <td>${element.Jig_Sts}</td>
+            </tr>
+            </tr>
+        `
+    });
+    crtlist.innerHTML = template;
+});
+
+var table = document.getElementById("fetch"), rIndex;
+table.addEventListener('click', event => {
+    for(var i = 1; i < table.rows.length; i++){
+        table.rows[i].onclick = function(){
+            rIndex = this.rowIndex;
+            
+            document.getElementById("FileNo11").value = this.cells[0].innerHTML;
+            document.getElementById("ItemDescripition11").value = this.cells[1].innerHTML;
+            document.getElementById("DrawingNo11").value = this.cells[2].innerHTML;
+            document.getElementById("DrawingIssue11").value = this.cells[3].innerHTML;
+        }
     }
 });

@@ -11,3 +11,7 @@ form{
     border-radius: 10px;
     padding: 30px;
 }
+
+table tr:not(:first-child){
+    cursor: pointer;transition: all .25s ease-in-out;
+}

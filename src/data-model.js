@@ -1,12 +1,9 @@
 let db = require('./database');
 
-/* CRUD functions: readTable, createRow, updateRow, deleteRow             */
+/* CRUD functions: readTable, createRow, updateRow, deleteRow */
 
 var schema = {
-    "items": ["id", "name", "unit", "price", "qty", "desc"],
-    "announce": ["id", "title", "date", "body"],
-    "events": ["id", "title", "date", "body"],
-    "motd": ["id", "title", "body"]
+    "Files": ['File_No', 'Item_Des', 'Dra_No', 'Dra_Iss', 'Jig_Sts']
 };
 
 function readTable(table) {
@@ -19,24 +16,39 @@ function readTable(table) {
     });
 };
 
-function createRow(table, cb) {
-    let sql = `INSERT INTO ${table} DEFAULT VALUES`;
-    db.run(sql, cb);
+function createRow(table, obj) {
+    return new Promise((resolve) => {
+        var pairs = "";
+        for (const key in obj) {
+            if (pairs) pairs += ", ";
+            pairs += `'${obj[key]}'`;
+        };
+        let sql = `INSERT INTO ${table} (${schema[table].toString()}) VALUES (${pairs})`;
+        db.run(sql, function (err) {
+            if (err) resolve(err);
+            resolve();
+        });
+    });
 };
 
-function updateRow(table, rb, cb) {
-    var pairs = "";           /* for constructing 'identifier = value, ...' */
-    for (field of schema[table].slice(1)) {   /* for every column except id */
-        if (pairs) pairs += ", ";    /* insert comma unless string is empty */
-        pairs += `${field} = '${escape(rb[field])}'`;   /* column = 'value' */
-    }
-    let sql = `UPDATE ${table} SET ${pairs} WHERE id = ?`;  /* ? = rb['id'] */
-    db.run(sql, rb['id'], cb);
+function updateRow(table, obj) {
+    return new Promise((resolve) => {
+        const sql = `UPDATE ${table} SET Item_Des=?, Dra_No=?, Dra_Iss=? WHERE File_No=?`;
+        db.run(sql, [obj.Item_Des, obj.Dra_No, obj.Dra_Iss, obj.File_No], function (err){
+            if (err) resolve(err);
+            resolve();
+        });
+    });
 };
 
-function deleteRow(table, id, cb) {
-    let sql = `DELETE FROM ${table} WHERE id = ${id};`;
-    db.run(sql, cb);
+function deleteRow(table, obj) {
+    return new Promise((resolve) => {
+        let sql = `DELETE FROM ${table} WHERE File_No = "${obj.File_No}"`;
+        db.run(sql, function (err){
+            if (err) console.log(err);;
+            resolve();
+        });
+    });
 };
 
 module.exports = {

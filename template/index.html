@@ -55,9 +55,9 @@
                         <input type="text" class="form-control col-md-6" name="DrawingIssue" id="DrawingIssue11" value="" required>
                     </div>
 
-                    <input type="submit" name='btn' class="btn btn-primary col-md-3" value="Save" style="margin-top: 8vh; margin-left: 3.5vw; margin-bottom: 5vh;">
-                    <input type="submit" name='btn' class="btn btn-warning col-md-3" value="Update" style="margin-top: 8vh; margin-bottom: 5vh;">
-                    <input type="submit" name='btn' class="btn btn-danger col-md-3" value="Delete" style="margin-top: 8vh; margin-bottom: 5vh;">
+                    <input type="submit" name='btn' id="btnSave" class="btn btn-primary col-md-3" value="Save" style="margin-top: 8vh; margin-left: 3.5vw; margin-bottom: 5vh;">
+                    <input type="submit" name='btn' id="btnUpdate" class="btn btn-warning col-md-3" value="Update" style="margin-top: 8vh; margin-bottom: 5vh;">
+                    <input type="submit" name='btn' id="btnDelete" class="btn btn-danger col-md-3" value="Delete" style="margin-top: 8vh; margin-bottom: 5vh;">
                     <!-- <input type="submit" name='btn' class="btn btn-primary col-md-2" value="Clear" style="margin-top: 10vh;"> -->
                 </form>
             </div>
@@ -74,22 +74,13 @@
                                 <th>Jig Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                            <tr>
-                                <td>sub1</td>
-                                <td>sub1</td>
-                                <td>sub1</td>
-                                <td>sub1</td>
-                                <td>sub1</td>
-                            </tr>
-                            </tr>
+                        <tbody id="crtlist">
+                            <!-- info -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-
     </section>
 
     <section class="container-fluid" id="create_jigs_container" style="display: none;">
