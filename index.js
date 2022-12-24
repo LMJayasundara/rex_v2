@@ -29,11 +29,11 @@ function createWindow() {
         Menu.setApplicationMenu(null);
         supv_menu = new main_menu(mainWindow);
 
-        checkPort().then((ports)=>{
-            if(ports.length == 0){
-                mainWindow.webContents.send('state', "err");
-            }
-        });
+        // checkPort().then((ports)=>{
+        //     if(ports.length == 0){
+        //         mainWindow.webContents.send('state', "err");
+        //     }
+        // });
     });
 
     mainWindow.loadFile(path.join(__dirname, '/template/index.html'));

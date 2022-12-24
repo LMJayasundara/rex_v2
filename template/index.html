@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <section class="container" id="login_container" style="padding-top: 25vh; display: block;">
+    <section class="container-fluid" id="login_container" style="padding-top: 25vh; display: block;">
         <section class="row justify-content-center">
             <form class="form-container col-sm-4" id="loginForm">
                 <div class="form-group">
@@ -30,52 +30,102 @@
         </section>
     </section>
 
-    <section class="container" id="error_container" style="display: none;">
-        <h2 class="text-center mt-0">Error</h2>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Assumenda, deserunt optio exercitationem placeat in
-            est enim porro ut dolore expedita ullam laboriosam aperiam inventore minima, error fugit nemo quis nisi.</p>
+    <section class="container-fluid" id="error_container" style="display: none;">
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center" style="margin-left: -15px; margin-right: -15px; margin-top: -30px;">
+            <h6 style="color: white"> Error </h6>
+        </nav>
     </section>
 
-    <section class="container" id="new_file_container" style="display: none;">
-        <h2 class="text-center mt-0">Create A New File</h2>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Assumenda, deserunt optio exercitationem placeat in
-            est enim porro ut dolore expedita ullam laboriosam aperiam inventore minima, error fugit nemo quis nisi.</p>
+    <section class="container-fluid" id="new_file_container" style="display: none;">
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center" style="margin-left: -15px; margin-right: -15px; margin-top: -30px;">
+            <h6 style="color: white"> Create a New File </h6>
+        </nav>
+
+        <div class="row" style="margin-top: 5%;">
+            <div class="col-md-4" style="background-color: #F5F7FA;">
+                <form>
+                    <div class="form-group" style="margin: 2em;">
+                        <label style="margin-top: 2em;">File No:</label>
+                        <input type="text" class="form-control col-md-6" name="FileNo" id="FileNo11" value="" required>
+                        <label>Item Descripition:</label>
+                        <input type="text" class="form-control col-md-6" name="ItemDescripition" id="ItemDescripition11" value="" required>
+                        <label>Drawing No:</label>
+                        <input type="text" class="form-control col-md-6" name="DrawingNo" id="DrawingNo11" value="" required>
+                        <label>Drawing Issue:</label>
+                        <input type="text" class="form-control col-md-6" name="DrawingIssue" id="DrawingIssue11" value="" required>
+                    </div>
+
+                    <input type="submit" name='btn' class="btn btn-primary col-md-3" value="Save" style="margin-top: 8vh; margin-left: 3.5vw; margin-bottom: 5vh;">
+                    <input type="submit" name='btn' class="btn btn-warning col-md-3" value="Update" style="margin-top: 8vh; margin-bottom: 5vh;">
+                    <input type="submit" name='btn' class="btn btn-danger col-md-3" value="Delete" style="margin-top: 8vh; margin-bottom: 5vh;">
+                    <!-- <input type="submit" name='btn' class="btn btn-primary col-md-2" value="Clear" style="margin-top: 10vh;"> -->
+                </form>
+            </div>
+
+            <div class="col-md-8 justify-content-center">
+                <div style="height: 80vh; overflow: scroll; overflow-x: hidden;">
+                    <table id="fetch" class="table" style="text-align: center;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>File No</th>
+                                <th>Item Descripition</th>
+                                <th>Drawing No</th>
+                                <th>Drawing Issue</th>
+                                <th>Jig Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <tr>
+                                <td>sub1</td>
+                                <td>sub1</td>
+                                <td>sub1</td>
+                                <td>sub1</td>
+                                <td>sub1</td>
+                            </tr>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </section>
 
-    <section class="container" id="create_jigs_container" style="display: none;">
-        <h2 class="text-center mt-0">Create Jigs</h2>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Assumenda, deserunt optio exercitationem placeat in
-            est enim porro ut dolore expedita ullam laboriosam aperiam inventore minima, error fugit nemo quis nisi.</p>
+    <section class="container-fluid" id="create_jigs_container" style="display: none;">
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center" style="margin-left: -15px; margin-right: -15px; margin-top: -30px;">
+            <h6 style="color: white"> Create Jigs </h6>
+        </nav>
     </section>
 
-    <section class="container" id="execute_container" style="display: none;">
-        <h2 class="text-center mt-0">Execute</h2>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Assumenda, deserunt optio exercitationem placeat in
-            est enim porro ut dolore expedita ullam laboriosam aperiam inventore minima, error fugit nemo quis nisi.</p>
+    <section class="container-fluid" id="execute_container" style="display: none;">
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center" style="margin-left: -15px; margin-right: -15px; margin-top: -30px;">
+            <h6 style="color: white"> Execute </h6>
+        </nav>
     </section>
 
-    <section class="container" id="operate_machine_container" style="display: none;">
-        <h2 class="text-center mt-0">Operate Machine</h2>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Assumenda, deserunt optio exercitationem placeat in
-            est enim porro ut dolore expedita ullam laboriosam aperiam inventore minima, error fugit nemo quis nisi.</p>
+    <section class="container-fluid" id="operate_machine_container" style="display: none;">
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center" style="margin-left: -15px; margin-right: -15px; margin-top: -30px;">
+            <h6 style="color: white"> Operate Machine </h6>
+        </nav>
     </section>
 
-    <section class="container" id="changed_config_container" style="display: none;">
-        <h2 class="text-center mt-0">Changed Config</h2>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Assumenda, deserunt optio exercitationem placeat in
-            est enim porro ut dolore expedita ullam laboriosam aperiam inventore minima, error fugit nemo quis nisi.</p>
+    <section class="container-fluid" id="change_config_container" style="display: none;">
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center" style="margin-left: -15px; margin-right: -15px; margin-top: -30px;">
+            <h6 style="color: white"> Change Config </h6>
+        </nav>
     </section>
 
-    <section class="container" id="changed_password_container" style="display: none;">
-        <h2 class="text-center mt-0">Changed Password</h2>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Assumenda, deserunt optio exercitationem placeat in
-            est enim porro ut dolore expedita ullam laboriosam aperiam inventore minima, error fugit nemo quis nisi.</p>
+    <section class="container-fluid" id="change_password_container" style="display: none;">
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center" style="margin-left: -15px; margin-right: -15px; margin-top: -30px;">
+            <h6 style="color: white"> Change Password </h6>
+        </nav>
     </section>
 
-    <section class="container" id="about_container" style="display: none;">
-        <h2 class="text-center mt-0">About Page</h2>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Assumenda, deserunt optio exercitationem placeat in est
-            enim porro ut dolore expedita ullam laboriosam aperiam inventore minima, error fugit nemo quis nisi.</p>
+    <section class="container-fluid" id="about_container" style="display: none;">
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center" style="margin-left: -15px; margin-right: -15px; margin-top: -30px;">
+            <h6 style="color: white"> About </h6>
+        </nav>
     </section>
 
     <!-- Add js script files -->

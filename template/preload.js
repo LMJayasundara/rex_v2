@@ -7,8 +7,8 @@ function hideall(){
     document.getElementById('create_jigs_container').style.display = 'none';
     document.getElementById('execute_container').style.display = 'none';
     document.getElementById('operate_machine_container').style.display = 'none';
-    document.getElementById('changed_config_container').style.display = 'none';
-    document.getElementById('changed_password_container').style.display = 'none';
+    document.getElementById('change_config_container').style.display = 'none';
+    document.getElementById('change_password_container').style.display = 'none';
     document.getElementById('about_container').style.display = 'none';
 };
 
@@ -47,12 +47,12 @@ ipcRenderer.on("state", (event, sts)=>{
 
     else if(sts == 'sub32'){
         hideall();
-        document.getElementById('changed_config_container').style.display = 'block';
+        document.getElementById('change_config_container').style.display = 'block';
     }
 
     else if(sts == 'sub33'){
         hideall();
-        document.getElementById('changed_password_container').style.display = 'block';
+        document.getElementById('change_password_container').style.display = 'block';
     }
 
     else if(sts == 'sub41'){

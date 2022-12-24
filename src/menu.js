@@ -43,13 +43,13 @@ class main_menu {
                         }
                     },
                     {
-                        label: 'Changed Config',
+                        label: 'Change Config',
                         click: function () {
                             mainWindow.webContents.send('state', "sub32");
                         }
                     },
                     {
-                        label: 'Changed Password',
+                        label: 'Change Password',
                         click: function () {
                             mainWindow.webContents.send('state', "sub33");
                         }
@@ -63,8 +63,8 @@ class main_menu {
                     {
                         label: 'Relaod',
                         click: function () {
-                            // mainWindow.reload();
-                            mainWindow.webContents.send('state', "sub11");
+                            mainWindow.reload();
+                            // mainWindow.webContents.send('state', "sub11");
                         }
                     },
                     { role: 'toggleDevTools' },
