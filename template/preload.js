@@ -18,18 +18,26 @@ async function renderGetCrtlist() {
 
 async function renderAddProduct(e) {
     e.preventDefault();
+    var FileNo = document.getElementById('FileNo11').value;
+    var ItemDescripition = document.getElementById('ItemDescripition11').value;
+    var DrawingNo = document.getElementById('DrawingNo11').value;
+    var DrawingIssue = document.getElementById('DrawingIssue11').value
+
     const obj = {
-        File_No: document.getElementById('FileNo11').value,
-        Item_Des: document.getElementById('ItemDescripition11').value,
-        Dra_No: document.getElementById('DrawingNo11').value,
-        Dra_Iss: document.getElementById('DrawingIssue11').value,
+        File_No: FileNo,
+        Item_Des: ItemDescripition,
+        Dra_No: DrawingNo,
+        Dra_Iss: DrawingIssue,
         Jig_Sts: 'Work'
+    };
+
+    if(FileNo != '' || Item_Des != '' || Dra_No != '' || Dra_Iss != ''){
+        await ipcRenderer.invoke('saveCrtlist', obj);
     }
-    document.getElementById('FileNo11').value = ""
-    document.getElementById('ItemDescripition11').value = ""
-    document.getElementById('DrawingNo11').value = ""
-    document.getElementById('DrawingIssue11').value = ""
-    await ipcRenderer.invoke('saveCrtlist', obj)
+    FileNo = "";
+    ItemDescripition = "";
+    DrawingNo = "";
+    DrawingIssue = "";
 };
 
 async function renderUpdateProduct(e) {

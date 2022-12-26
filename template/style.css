@@ -15,3 +15,5 @@ form{
 table tr:not(:first-child){
     cursor: pointer;transition: all .25s ease-in-out;
 }
+
+table tr:not(:first-child):hover{background-color: #ddd;}

@@ -1,3 +1,5 @@
+-- CREATE TABLE Users
+
 CREATE TABLE Users (
     User_Name varchar(255) NOT NULL,
     User_Password varchar(255) NOT NULL,
@@ -28,5 +30,3 @@ INSERT INTO Files (File_No, Item_Des, Dra_No, Dra_Iss, Jig_Sts)
 VALUES ('BCM0001', 'Long Mesh Cord', 'D001', 'ISS001', 'Work');
 
 DROP TABLE Files;
-
-DELETE FROM Files WHERE File_No = "BCM0002";
