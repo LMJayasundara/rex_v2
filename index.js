@@ -123,3 +123,15 @@ function deleteCrtlist(obj) {
         getCrtlist();
     });
 };
+
+// ipcMain.handle('getTmpGig', () => {
+//     getTmpGig()
+// });
+
+// function getTmpGig() {
+//     readTable("tmpjig").then((data)=>{
+//         return data
+//     }).then((data)=>{
+//         mainWindow.webContents.send('tmpGig', data);
+//     });
+// };

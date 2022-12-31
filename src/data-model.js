@@ -3,7 +3,8 @@ let db = require('./database');
 /* CRUD functions: readTable, createRow, updateRow, deleteRow */
 
 var schema = {
-    "Files": ['File_No', 'Item_Des', 'Dra_No', 'Dra_Iss', 'Jig_Sts']
+    "Files": ['File_No', 'Item_Des', 'Dra_No', 'Dra_Iss', 'Jig_Sts'],
+    "tmpjig": ['ind', 'clr', 'gap']
 };
 
 function readTable(table) {

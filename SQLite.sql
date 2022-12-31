@@ -30,3 +30,15 @@ INSERT INTO Files (File_No, Item_Des, Dra_No, Dra_Iss, Jig_Sts)
 VALUES ('BCM0001', 'Long Mesh Cord', 'D001', 'ISS001', 'Work');
 
 DROP TABLE Files;
+
+-- CREATE TABLE tmpjig 
+
+CREATE TABLE tmpjig (
+    ind int NOT NULL,
+    clr varchar(255) NOT NULL,
+    gap int
+);
+
+INSERT INTO tmpjig (ind, clr, gap)
+VALUES (1, 'Green', 5);
+DROP TABLE tmpjig;

@@ -71,7 +71,7 @@
 
             <div class="col-md-8 justify-content-center">
                 <div style="height: 80vh; overflow: scroll; overflow-x: hidden;">
-                    <table id="fetch" class="table" style="text-align: center;">
+                    <table id="fetchtbl" class="table" style="text-align: center;">
                         <thead class="thead-dark">
                             <tr>
                                 <th>File No</th>
@@ -96,95 +96,99 @@
             <h6 style="color: white"> Create Jigs </h6>
         </nav>
 
-        <div class="row">
-            <div class="col-sm-4" style="height: 28vh; background-color: #F5F7FA;">
-                <div class="row sm-4" style="margin-top: 5%;">
-                    <div class="d-inline-flex">
-                        <div class="col-sm-4">
-                            <label for="">Item Description:</label>
+        <div id="input_container">
+            <div class="row">
+                <div class="col-sm-4" style="height: 28vh; background-color: #F5F7FA;">
+                    <div class="row sm-4" style="margin-top: 5%;">
+                        <div class="d-inline-flex">
+                            <div class="col-sm-4">
+                                <label for="">Item Description:</label>
+                            </div>
+                            <div class="col-sm-8" style="margin-left: 0.8vw; width: 20vw;" id="fetchdrop" >
+                                <select class="form-control" id="itmdes">
+                                    <!-- info -->
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-sm-8" style="margin-left: 0.8vw; width: 20vw;">
-                            <select name="" class="form-control" id="">
-                                <option value="">Two</option>
-                                <option value="">One</option>
-                            </select>
+                    </div>
+
+                    <div class="row sm-4" style="margin-top: 5%;">
+                        <label for="" class="col-sm-4 col-form-label">Cord Length:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control" id="crdlen" placeholder="Cord Length" value="100" onkeyup="document.getElementById('midpnt').value=(this.value/2)" required>
+                        </div>
+                    </div>
+
+                    <div class="row sm-4" style="margin-top: 5%;">
+                        <label for="" class="col-sm-4 col-form-label">Middle Point:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control" id="midpnt" placeholder="Middle Point" required readonly>
                         </div>
                     </div>
                 </div>
 
-                <div class="row sm-4" style="margin-top: 5%;">
-                    <label for="" class="col-sm-4 col-form-label">Cord Length:</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
+                <div class="col-sm-4" style="height: 28vh; background-color: #F5F7FA;">
+                    <div class="row sm-4" style="margin-top: 5%;">
+                        <label for="" class="col-sm-4 col-form-label">File No:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="filno" placeholder="File No" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="row sm-4" style="margin-top: 5%;">
+                        <label for="" class="col-sm-4 col-form-label">Drawing No:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="drano" placeholder="Drawing No" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="row sm-4" style="margin-top: 5%;">
+                        <label for="" class="col-sm-4 col-form-label">Issue:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="iss" placeholder="Issue" required readonly>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row sm-4" style="margin-top: 5%;">
-                    <label for="" class="col-sm-4 col-form-label">Middle Point:</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
+                <div class="col-sm-4" style="height: 28vh; background-color: #F5F7FA;">
+                    <div class="row sm-4" style="margin-top: 5%;">
+                        <label for="" class="col-sm-7 col-form-label">Total Marks:</label>
+                        <div class="col-sm-5">
+                            <input type="number" class="form-control" id="ttlmrk" placeholder="Marks" value="9" required>
+                        </div>
+                    </div>
+
+                    <div class="row sm-4" style="margin-top: 5%;">
+                        <label for="" class="col-sm-7 col-form-label">No of Nets per Turn:</label>
+                        <div class="col-sm-5">
+                            <input type="number" class="form-control" id="notrn" placeholder="Turns" value="1" required>
+                        </div>
+                    </div>
+
+                    <div class="row sm-4" style="margin-top: 5%;">
+                        <label for="" class="col-sm-7 col-form-label">Cut & Mark Adjustemt Value:</label>
+                        <div class="col-sm-5">
+                            <input type="number" class="form-control" id="adjval" placeholder="Adj Value" value="0" required>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-sm-4" style="height: 28vh; background-color: #F5F7FA;">
-                <div class="row sm-4" style="margin-top: 5%;">
-                    <label for="" class="col-sm-4 col-form-label">File No:</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
-                    </div>
-                </div>
-
-                <div class="row sm-4" style="margin-top: 5%;">
-                    <label for="" class="col-sm-4 col-form-label">Drawing No:</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
-                    </div>
-                </div>
-
-                <div class="row sm-4" style="margin-top: 5%;">
-                    <label for="" class="col-sm-4 col-form-label">Issue:</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-4" style="height: 28vh; background-color: #F5F7FA;">
-                <div class="row sm-4" style="margin-top: 5%;">
-                    <label for="" class="col-sm-7 col-form-label">Total Marks:</label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
-                    </div>
-                </div>
-
-                <div class="row sm-4" style="margin-top: 5%;">
-                    <label for="" class="col-sm-7 col-form-label">No of Nets per Turn:</label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
-                    </div>
-                </div>
-
-                <div class="row sm-4" style="margin-top: 5%;">
-                    <label for="" class="col-sm-7 col-form-label">Cut & Mark Adjustemt Value:</label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12" style="height: 8vh; background-color: #F5F7FA; margin-top: 1vh;">
-                <div class="d-flex justify-content-center" style="margin-left: 10.5vw; margin-top: 1vh;">
-                    <div class="col-sm-6 form-group row">
-                        <div class="col-sm-3">
-                            <label for="" class="col-form-label">K-K Distance:</label>
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control" id="" placeholder="test">
-                        </div>
-                        <div class="col-sm-3">
-                            <button type="button" class="btn btn-primary">Run</button>
+            <div class="row">
+                <div class="col-sm-12" style="height: 8vh; background-color: #F5F7FA; margin-top: 1vh;">
+                    <div class="d-flex justify-content-center" style="margin-left: 10.5vw; margin-top: 1vh;">
+                        <div class="col-sm-6 form-group row">
+                            <div class="col-sm-3">
+                                <label for="" class="col-form-label">K-K Distance:</label>
+                            </div>
+                            <div class="col-sm-5">
+                                <input type="number" class="form-control col-sm-12" id="kkdis" value="10" placeholder="K-K Distance">
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-primary col-sm-12" onclick="renderTmpGig()">Run</button>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-warning col-sm-12" onclick="clearInputs()">Clear</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -214,34 +218,37 @@
                             <label for="">Select Place:</label>
                         </div>
                         <div class="col-sm-6">
-                            <select name="" class="form-control" id="">
-                                <option value="">Two</option>
-                                <option value="">One</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row col-sm-12" style="margin-top: 5%; margin-left: 3vw;">
-                    <div class="d-flex justify-content-center">
-                        <div class="col-sm-4">
-                            <label for="">Select Color:</label>
-                        </div>
-                        <div class="col-sm-6">
-                            <select name="" class="form-control" id="">
+                            <select class="form-control" id="sltplc">
+                                <!-- info -->
                                 <option selected>Choose...</option>
-                                <option value="green">green</option>
-                                <option value="blue">blue</option>
-                                <option value="black">black</option>
                             </select>
-                        </div>
-                        <div class="col-sm-2" style="margin-left: 0.5vw;">
-                            <input type="submit" name='btn' class="btn btn-info" value="Add">
                         </div>
                     </div>
                 </div>
 
                 <div class="row col-sm-12" style="margin-top: 5%;">
+                    <div class="d-flex justify-content-center">
+                        <div class="col-sm-4">
+                            <label for="">Select Color:</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <select name="" class="form-control" id="sltclr">
+                                <option selected>Choose...</option>
+                                <option value="Green">Green</option>
+                                <option value="Blue">Blue</option>
+                                <option value="Black">Black</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row col-sm-12" style="margin-top: 5%;">
+                    <div class="d-flex justify-content-center">
+                        <input type="submit" name='btn' class="btn btn-info col-sm-2" value="Change" onclick="updateTmpTbl()">
+                    </div>
+                </div>
+
+                <!-- <div class="row col-sm-12" style="margin-top: 5%;">
                     <div class="d-flex justify-content-center">
                         <div class="col-sm-4">
                             <label for="">Select Gap:</label>
@@ -250,12 +257,12 @@
                             <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <div class="col-sm-6 mb-0" style="height: 45vh; background-color: #F5F7FA; margin-top: 0.5em;">
                 <div style="height: 45vh; overflow: scroll; overflow-x: hidden;">
-                    <table class="table table-bordered" style="text-align: center;  margin-top: 0.5em;">
+                    <table class="table table-bordered" style="text-align: center;  margin-top: 0.5em;" id="tmpTblx">
                         <thead class="thead-dark">
                             <tr>
                                 <th>Place No</th>
@@ -263,14 +270,8 @@
                                 <th>Gap</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                            <tr>
-                                <td style="color: green;">1</td>
-                                <td style="color: green;">2</td>
-                                <td style="color: green;">3</td>
-                            </tr>
-                            </tr>
+                        <tbody id="tmpTbl">
+                            <!-- info -->
                         </tbody>
                     </table>
                 </div>
@@ -280,7 +281,7 @@
         <div class="col-sm-12 mb-0" style="height: 7vh; background-color: #F5F7FA; margin-top: 0.5em;">
             <div class="d-flex justify-content-center">
                 <input type="submit" name="btn" class="btn btn-primary col-sm-1" style="margin-right: 1em;"
-                    value="Save">
+                    value="Save" onclick="saveTmpTbl()">
                 <input type="submit" name="btn" class="btn btn-primary col-sm-2" style="margin-right: 1em;"
                     value="Sumbmit to QA">
                 <input type="submit" name="btn" class="btn btn-primary col-sm-1" style="margin-right: 1em;"
