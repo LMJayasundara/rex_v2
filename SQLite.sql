@@ -23,6 +23,13 @@ CREATE TABLE Files (
     Dra_No varchar(255),
     Dra_Iss varchar(255),
     Jig_Sts varchar(255),
+    saved int default 0,
+    len int default null,
+    md int default null,
+    mark int default null,
+    turn int default null,
+    adj int default null,
+    kk int default null,
     PRIMARY KEY (File_No)
 );
 
@@ -31,14 +38,7 @@ VALUES ('BCM0001', 'Long Mesh Cord', 'D001', 'ISS001', 'Work');
 
 DROP TABLE Files;
 
--- CREATE TABLE tmpjig 
+-- Drop TABLES 
 
-CREATE TABLE tmpjig (
-    ind int NOT NULL,
-    clr varchar(255) NOT NULL,
-    gap int
-);
-
-INSERT INTO tmpjig (ind, clr, gap)
-VALUES (1, 'Green', 5);
-DROP TABLE tmpjig;
+DROP TABLE BCM0001;
+DROP TABLE BCM0002;

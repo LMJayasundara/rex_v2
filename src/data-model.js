@@ -3,13 +3,22 @@ let db = require('./database');
 /* CRUD functions: readTable, createRow, updateRow, deleteRow */
 
 var schema = {
-    "Files": ['File_No', 'Item_Des', 'Dra_No', 'Dra_Iss', 'Jig_Sts'],
-    "tmpjig": ['ind', 'clr', 'gap']
+    "Files": ['File_No', 'Item_Des', 'Dra_No', 'Dra_Iss', 'Jig_Sts']
 };
 
 function readTable(table) {
     return new Promise((resolve) => {
         let sql = `SELECT * FROM ${table}`;
+        db.all(sql, function (err, rows) {
+            if (err) throw (err);
+            resolve(rows);
+        });
+    });
+};
+
+function readGigTable(table) {
+    return new Promise((resolve) => {
+        let sql = `SELECT * FROM ${table} ORDER BY ind ASC`;
         db.all(sql, function (err, rows) {
             if (err) throw (err);
             resolve(rows);
@@ -42,6 +51,16 @@ function updateRow(table, obj) {
     });
 };
 
+function saveRow(obj) {
+    return new Promise((resolve) => {
+        const sql = `UPDATE Files SET saved=?, len=?, md=?, mark=?, turn=?, adj=?, kk=? WHERE File_No=?`;
+        db.run(sql, [obj.saved, obj.len, obj.md, obj.mark, obj.turn, obj.adj, obj.kk, obj.tblName], function (err){
+            if (err) resolve(err);
+            resolve();
+        });
+    });
+};
+
 function deleteRow(table, obj) {
     return new Promise((resolve) => {
         let sql = `DELETE FROM ${table} WHERE File_No = "${obj.File_No}"`;
@@ -52,9 +71,56 @@ function deleteRow(table, obj) {
     });
 };
 
+function createTbl(table) {
+    return new Promise((resolve) => {
+        let sql = `
+            CREATE TABLE ${table} (
+                ind int NOT NULL,
+                clr varchar(255) NOT NULL,
+                gap int NOT NULL,
+                PRIMARY KEY (ind)
+            );
+        `;
+        db.run(sql, (error) => {
+            if (error) {
+              console.error(error.message);
+            }
+            console.log('Table created successfully');
+            resolve();
+        });
+    });
+};
+
+function addTbl(table, data) {
+    return new Promise((resolve) => {
+        const sql = `INSERT INTO ${table} (ind, clr, gap) VALUES (?, ?, ?)`;
+        db.run(sql, [data[0], data[1], data[2]], function(error) {
+            if (error) {
+                console.error(error.message);
+            }
+            resolve();
+        });
+    });
+}
+
+function getSavedFiles() {
+    return new Promise((resolve) => {
+        let sql = `SELECT * FROM Files WHERE saved = 1`;
+        db.all(sql, function (err, rows) {
+            if (err) throw (err);
+            resolve(rows);
+        });
+    });
+}
+
 module.exports = {
     readTable,
     createRow,
     updateRow,
-    deleteRow
+    deleteRow,
+    createTbl,
+    addTbl,
+    saveRow,
+    getSavedFiles,
+    readGigTable
 }

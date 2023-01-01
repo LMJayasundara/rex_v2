@@ -64,7 +64,9 @@ class main_menu {
                         label: 'Relaod',
                         click: function () {
                             mainWindow.reload();
-                            // mainWindow.webContents.send('state', "sub11");
+                            mainWindow.webContents.once('did-finish-load', () => {
+                                mainWindow.webContents.send('state', 'sub11');
+                            });
                         }
                     },
                     { role: 'toggleDevTools' },

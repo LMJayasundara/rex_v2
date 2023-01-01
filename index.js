@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const main_menu = require('./src/menu');
-const { readTable, createRow, updateRow, deleteRow } = require('./src/data-model');
+const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable } = require('./src/data-model');
 const { checkPort } = require('./src/errors');
 const { SerialPort } = require('serialport');
 
@@ -124,14 +124,32 @@ function deleteCrtlist(obj) {
     });
 };
 
-// ipcMain.handle('getTmpGig', () => {
-//     getTmpGig()
-// });
+ipcMain.handle('saveTmpGig', (event, obj) => {
+    saveRow(obj).then(()=>{
+        saveTmpGig(obj);
+    });
+});
 
-// function getTmpGig() {
-//     readTable("tmpjig").then((data)=>{
-//         return data
-//     }).then((data)=>{
-//         mainWindow.webContents.send('tmpGig', data);
-//     });
-// };
+function saveTmpGig(obj) {
+    const { tblName, data } = obj;
+    createTbl(tblName).then(()=>{
+        data.forEach((element, i) => {
+            setTimeout(() => {
+                addTbl(tblName, element);
+            }, 50);
+        });
+        console.log("Data added");
+    });
+};
+
+ipcMain.handle('exeTbl', () => {
+    getSavedFiles().then((data)=>{
+        mainWindow.webContents.send('exeTblRes', data);
+    });
+});
+
+ipcMain.handle('getGigData', (event, obj) => {
+    readGigTable(obj).then((data)=>{
+        mainWindow.webContents.send('gigTblRes', data);
+    });
+});

@@ -247,17 +247,6 @@
                         <input type="submit" name='btn' class="btn btn-info col-sm-2" value="Change" onclick="updateTmpTbl()">
                     </div>
                 </div>
-
-                <!-- <div class="row col-sm-12" style="margin-top: 5%;">
-                    <div class="d-flex justify-content-center">
-                        <div class="col-sm-4">
-                            <label for="">Select Gap:</label>
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
-                        </div>
-                    </div>
-                </div> -->
             </div>
 
             <div class="col-sm-6 mb-0" style="height: 45vh; background-color: #F5F7FA; margin-top: 0.5em;">
@@ -315,8 +304,6 @@
                     value="Start">
                 <input type="submit" name="btn" class="btn btn-primary col-sm-1" style="margin-right: 1vw; margin-top: 0.5vh;"
                     value="Stop">
-                <input type="submit" name="btn" class="btn btn-primary col-sm-1" style="margin-right: 1vw; margin-top: 0.5vh;"
-                    value="Pause">
                 <input type="submit" name="btn" class="btn btn-primary col-sm-1" style="margin-right: 1vw; margin-top: 0.5vh;" 
                     value="Pre Print">
             </div>
@@ -324,28 +311,21 @@
 
         <div class="row col-sm mb-0" style="height: 50vh;">
             <div class="col-sm-8 mb-0" style="height: 50vh; background-color: #F5F7FA; margin-top: 0.5em; overflow: scroll; overflow-x: hidden;">
-                <table class="table" style="text-align: center;">
+                <table id="mainExeTbl" class="table" style="text-align: center;">
                     <thead class="thead-dark">
                       <tr>
                         <th>File No.</th>
                         <th>Item Description</th>
-                        <th>Drawing No.</th>
-                        <th>Issue</th>
                         <th>Status</th>
                         <th>No of Turns</th>
+                        <th style="display: none;"></th>
+                        <th style="display: none;"></th>
+                        <th style="display: none;"></th>
+                        <th style="display: none;"></th>
                       </tr>
                     </thead>
-                    <tbody>
-                          <tr>
-                            <tr>
-                              <td>1</td>
-                              <td>2</td>
-                              <td>3</td>
-                              <td>4</td>
-                              <td>5</td>
-                              <td>6</td>
-                            </tr>
-                          </tr>
+                    <tbody id="exeTbl">
+                        <!-- info -->
                     </tbody>
                 </table>
             </div>
@@ -359,14 +339,8 @@
                         <th>Gap</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <tr>
-                          <td>1</td>
-                          <td>2</td>
-                          <td>3</td>
-                        </tr>
-                      </tr>
+                    <tbody id="gigTbl">
+                      <!-- info -->
                     </tbody>
                   </table>
             </div>
@@ -375,41 +349,41 @@
         <div class="row">
             <div class="col-sm-6" style="height: 20vh; background-color: #F5F7FA; margin-top: 2vh;">
                 <div class="row sm-4 d-flex justify-content-center" style="margin-top: 3%;">
-                    <label for="" class="col-sm-4 col-form-label">Total Marks:</label>
+                    <label for="" class="col-sm-4 col-form-label">Drawing No:</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
+                        <input type="text" class="form-control" id="exeDraNo" readonly required>
                     </div>
                 </div>
 
                 <div class="row sm-4 d-flex justify-content-center" style="margin-top: 3%;">
-                    <label for="" class="col-sm-4 col-form-label">No of Nets per Turn:</label>
+                    <label for="" class="col-sm-4 col-form-label">Issue:</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
+                        <input type="text" class="form-control" id="exeIss" readonly required>
                     </div>
                 </div>
             </div>
 
             <div class="col-sm-6" style="height: 20vh; background-color: #F5F7FA; margin-top: 2vh;">
                 <div class="row sm-4 d-flex justify-content-center" style="margin-top: 3%;">
-                    <label for="" class="col-sm-4 col-form-label">Total Marks:</label>
+                    <label for="" class="col-sm-4 col-form-label">Cord Length:</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
+                        <input type="text" class="form-control" id="exeCrdln" readonly required>
                     </div>
                 </div>
 
                 <div class="row sm-4 d-flex justify-content-center" style="margin-top: 3%;">
-                    <label for="" class="col-sm-4 col-form-label">No of Nets per Turn:</label>
+                    <label for="" class="col-sm-4 col-form-label">Total Marks:</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
+                        <input type="text" class="form-control" id="exeTtlMrk" readonly required>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="row sm-4 d-flex justify-content-center" style="height: 10vh; background-color: #F5F7FA;">
-            <label for="" class="col-sm-2 col-form-label">No of Nets per Turn:</label>
+            <label for="" class="col-sm-2 col-form-label">Progress:</label>
             <div class="col-sm-3">
-                <input type="text" class="form-control" id="" name="" placeholder="test" value="" required>
+                <input type="text" class="form-control" id="exePro" readonly required>
             </div>
         </div>
 
