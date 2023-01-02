@@ -138,6 +138,8 @@ ipcRenderer.on("state", (event, sts) => {
 
     else if (sts == 'err') {
         hideall();
+        document.body.style.background = "none";
+        document.getElementById('errDis').innerHTML = "Ports Not Founded!";
         document.getElementById('error_container').style.display = 'block';
     }
 });
@@ -353,3 +355,7 @@ ipcRenderer.on('gigTblRes', (event, results) => {
     });
     gigTbl.innerHTML = tbl;
 });
+
+function relaunch() {
+    ipcRenderer.invoke('relaunch');
+};

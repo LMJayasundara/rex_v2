@@ -4,9 +4,12 @@ const main_menu = require('./src/menu');
 const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable } = require('./src/data-model');
 const { checkPort } = require('./src/errors');
 const { SerialPort } = require('serialport');
+const Store = require('electron-store');
+const store = new Store();
 
 let mainWindow;
 let supv_menu;
+
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1200,
@@ -34,6 +37,40 @@ function createWindow() {
                 mainWindow.webContents.send('state', "err");
             }
         });
+
+        ////////////////////////////////////////////////////////////
+        
+        // const serialPort = new SerialPort({
+        //     path: "COM",
+        //     baudRate: 19200,
+        //     dataBits: 8,
+        //     parity: "even",
+        //     stopBits: 1,
+        //     flowControl: false
+        // }, false);
+        
+        // serialPort.on('error', function (err) {
+        //     mainWindow.webContents.send('state', "err");
+        //     const options = {
+        //         type: 'error',
+        //         title: 'Error!',
+        //         buttons: ['Ok'],
+        //         message: 'Modbus Connection Error!',
+        //         detail: err.message
+        //     };
+        //     const response = dialog.showMessageBoxSync(mainWindow, options);
+        //     console.log(response);
+        //     if (response == 0) {
+        //         app.quit();
+        //     }
+        // });
+
+        // mainWindow.setAlwaysOnTop(true, 'floating');
+
+        ////////////////////////////////////////////////////////////
+
+        // store.set('unicorn', 'shan');
+        // console.log(store.get('unicorn'));
     });
 
     mainWindow.loadFile(path.join(__dirname, '/template/index.html'));
@@ -52,6 +89,11 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
     }
+});
+
+ipcMain.handle('relaunch', () => {
+    app.relaunch();
+    app.exit(0);
 });
 
 ipcMain.handle('login', (event, obj) => {

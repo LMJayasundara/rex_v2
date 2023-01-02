@@ -4,16 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "nodemon --watch index.js --exec electron ."
   },
   "keywords": [],
   "author": "JMJayasundara",
   "license": "ISC",
   "devDependencies": {
     "electron": "^19.1.6",
-    "mysql2": "^2.3.3"
+    "nodemon": "^2.0.20"
   },
   "dependencies": {
+    "electron-store": "^8.1.0",
     "serialport": "^10.5.0",
     "sqlite3": "^5.1.2"
   }
