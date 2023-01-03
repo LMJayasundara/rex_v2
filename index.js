@@ -9,7 +9,7 @@ const store = new Store();
 const { autoUpdater, AppUpdater } = require("electron-updater");
 
 //Basic flags
-// autoUpdater.autoDownload = false;
+autoUpdater.autoDownload = false;
 
 let mainWindow;
 let supv_menu;
@@ -79,23 +79,23 @@ function createWindow() {
 
         /////////////////////////////////////////////////////////////
 
-        // mainWindow.webContents.send('version', app.getVersion());
-        // autoUpdater.checkForUpdates();
+        mainWindow.webContents.send('version', app.getVersion());
+        autoUpdater.checkForUpdates();
 
-        // // Listen for update-available event
-        // autoUpdater.on('update-available', () => {
-        //     // Show a dialog window asking the user if they want to install the update
-        //     const response = dialog.showMessageBox({
-        //         type: 'info',
-        //         title: 'Update Available',
-        //         message: 'A new update is available. Do you want to install it now?',
-        //         buttons: ['Yes', 'No']
-        //     })
-        //     if (response === 0) { // User clicked "Yes"
-        //         // Install the update and restart the app
-        //         autoUpdater.quitAndInstall()
-        //     }
-        // });
+        // Listen for update-available event
+        autoUpdater.on('update-available', () => {
+            // Show a dialog window asking the user if they want to install the update
+            const response = dialog.showMessageBox({
+                type: 'info',
+                title: 'Update Available',
+                message: 'A new update is available. Do you want to install it now?',
+                buttons: ['Yes', 'No']
+            })
+            if (response === 0) { // User clicked "Yes"
+                // Install the update and restart the app
+                autoUpdater.quitAndInstall()
+            }
+        });
 
         // autoUpdater.on('error', (error) => {
         //     // Show an error dialog
