@@ -1,5 +1,4 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
-const knex = require('knex');
 const path = require('path');
 const main_menu = require('./src/menu');
 const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable } = require('./src/datamodel');
