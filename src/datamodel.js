@@ -1,4 +1,8 @@
-let db = require('./database');
+const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
+const dbPath = path.resolve(process.resourcesPath, 'database/main.db').replace('app.asar', 'app.asar.unpacked');
+// const dbPath = path.resolve(__dirname, '../database/main.db');
+let db = new sqlite3.Database(dbPath);
 
 /* CRUD functions: readTable, createRow, updateRow, deleteRow */
 
@@ -101,7 +105,7 @@ function addTbl(table, data) {
             resolve();
         });
     });
-}
+};
 
 function getSavedFiles() {
     return new Promise((resolve) => {
@@ -111,7 +115,7 @@ function getSavedFiles() {
             resolve(rows);
         });
     });
-}
+};
 
 module.exports = {
     readTable,
@@ -123,4 +127,4 @@ module.exports = {
     saveRow,
     getSavedFiles,
     readGigTable
-}
+};

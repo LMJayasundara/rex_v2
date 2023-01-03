@@ -1,4 +1,4 @@
-const { Menu } = require('electron');
+const { app, Menu } = require('electron');
 
 class main_menu {
     constructor(mainWindow){
@@ -65,6 +65,7 @@ class main_menu {
                         click: function () {
                             mainWindow.reload();
                             mainWindow.webContents.once('did-finish-load', () => {
+                                mainWindow.webContents.send('version', app.getVersion());
                                 mainWindow.webContents.send('state', 'sub11');
                             });
                         }

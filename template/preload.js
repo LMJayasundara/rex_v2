@@ -359,3 +359,7 @@ ipcRenderer.on('gigTblRes', (event, results) => {
 function relaunch() {
     ipcRenderer.invoke('relaunch');
 };
+
+ipcRenderer.on('version', (event, results) => {
+    document.getElementById('Vno').innerHTML = results;
+});

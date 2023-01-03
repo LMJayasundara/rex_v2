@@ -1,11 +1,16 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
+const knex = require('knex');
 const path = require('path');
 const main_menu = require('./src/menu');
-const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable } = require('./src/data-model');
+const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable } = require('./src/datamodel');
 const { checkPort } = require('./src/errors');
 const { SerialPort } = require('serialport');
 const Store = require('electron-store');
 const store = new Store();
+const { autoUpdater, AppUpdater } = require("electron-updater");
+
+//Basic flags
+// autoUpdater.autoDownload = false;
 
 let mainWindow;
 let supv_menu;
@@ -31,12 +36,13 @@ function createWindow() {
         mainWindow.show();
         Menu.setApplicationMenu(null);
         supv_menu = new main_menu(mainWindow);
+        mainWindow.openDevTools()
 
-        checkPort().then((ports)=>{
-            if(ports.length == 0){
-                mainWindow.webContents.send('state', "err");
-            }
-        });
+        // checkPort().then((ports)=>{
+        //     if(ports.length == 0){
+        //         mainWindow.webContents.send('state', "err");
+        //     }
+        // });
 
         ////////////////////////////////////////////////////////////
         
@@ -71,6 +77,31 @@ function createWindow() {
 
         // store.set('unicorn', 'shan');
         // console.log(store.get('unicorn'));
+
+        /////////////////////////////////////////////////////////////
+
+        // mainWindow.webContents.send('version', app.getVersion());
+        // autoUpdater.checkForUpdates();
+
+        // // Listen for update-available event
+        // autoUpdater.on('update-available', () => {
+        //     // Show a dialog window asking the user if they want to install the update
+        //     const response = dialog.showMessageBox({
+        //         type: 'info',
+        //         title: 'Update Available',
+        //         message: 'A new update is available. Do you want to install it now?',
+        //         buttons: ['Yes', 'No']
+        //     })
+        //     if (response === 0) { // User clicked "Yes"
+        //         // Install the update and restart the app
+        //         autoUpdater.quitAndInstall()
+        //     }
+        // });
+
+        // autoUpdater.on('error', (error) => {
+        //     // Show an error dialog
+        //     dialog.showErrorBox('Error', error.message);
+        // });
     });
 
     mainWindow.loadFile(path.join(__dirname, '/template/index.html'));
