@@ -10,6 +10,7 @@ const { autoUpdater, AppUpdater } = require("electron-updater");
 
 //Basic flags
 autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
 
 let mainWindow;
 let supv_menu;
@@ -44,7 +45,7 @@ function createWindow() {
         // });
 
         ////////////////////////////////////////////////////////////
-        
+
         // const serialPort = new SerialPort({
         //     path: "COM",
         //     baudRate: 19200,
@@ -53,7 +54,7 @@ function createWindow() {
         //     stopBits: 1,
         //     flowControl: false
         // }, false);
-        
+
         // serialPort.on('error', function (err) {
         //     mainWindow.webContents.send('state', "err");
         //     const options = {
@@ -80,33 +81,54 @@ function createWindow() {
         /////////////////////////////////////////////////////////////
 
         mainWindow.webContents.send('version', app.getVersion());
-        autoUpdater.checkForUpdates();
-
-        // Listen for update-available event
-        autoUpdater.on('update-available', () => {
-            // Show a dialog window asking the user if they want to install the update
-            const response = dialog.showMessageBox({
-                type: 'info',
-                title: 'Update Available',
-                message: 'A new update is available. Do you want to install it now?',
-                buttons: ['Yes', 'No']
-            })
-            if (response === 0) { // User clicked "Yes"
-                // Install the update and restart the app
-                autoUpdater.quitAndInstall()
-            }
-        });
-
-        // autoUpdater.on('error', (error) => {
-        //     // Show an error dialog
-        //     dialog.showErrorBox('Error', error.message);
-        // });
     });
 
     mainWindow.loadFile(path.join(__dirname, '/template/index.html'));
 };
 
+autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+        type: 'info',
+        buttons: ['Update', 'Later'],
+        title: 'Application Update',
+        message: 'A new version of the application is available.'
+    };
+
+    dialog.showMessageBox(dialogOpts).then((returnValue) => {
+        if (returnValue.response === 0) autoUpdater.downloadUpdate();
+    });
+});
+
+autoUpdater.on('download-progress', (progress) => {
+    let log_message = `Download speed: ${progress.bytesPerSecond}`;
+    log_message = `${log_message} - Downloaded ${progress.percent}%`;
+    log_message = `${log_message} (${progress.transferred}/${progress.total})`;
+    dialog.showMessageBox({
+      type: 'info',
+      message: log_message
+    });
+});
+
+autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+        type: 'info',
+        buttons: ['Restart', 'Later'],
+        title: 'Application Update',
+        message: process.platform === 'win32' ? releaseNotes : releaseName,
+        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+    };
+
+    dialog.showMessageBox(dialogOpts).then((returnValue) => {
+        if (returnValue.response === 0) autoUpdater.quitAndInstall();
+    });
+});
+
+autoUpdater.on('error', (error) => {
+    dialog.showErrorBox('Error', error.message);
+});
+
 app.whenReady().then(() => {
+    autoUpdater.checkForUpdates();
     createWindow();
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
@@ -129,11 +151,11 @@ ipcMain.handle('relaunch', () => {
 ipcMain.handle('login', (event, obj) => {
     const { username, password } = obj;
 
-    readTable("Users").then((data)=>{
+    readTable("Users").then((data) => {
         return data;
-    }).then((data)=>{
-        data.forEach((cred)=>{
-            if(cred.User_Name == username && cred.User_Password == password){
+    }).then((data) => {
+        data.forEach((cred) => {
+            if (cred.User_Name == username && cred.User_Password == password) {
                 const menu = Menu.buildFromTemplate(supv_menu);
                 Menu.setApplicationMenu(menu);
                 mainWindow.webContents.send('state', "sub11");
@@ -142,7 +164,7 @@ ipcMain.handle('login', (event, obj) => {
     });
 });
 
-function showErr(error){
+function showErr(error) {
     dialog.showErrorBox('Error', error.message, {
         detail: error.stack
     });
@@ -153,9 +175,9 @@ ipcMain.handle('getCrtlist', () => {
 });
 
 function getCrtlist() {
-    readTable("Files").then((data)=>{
+    readTable("Files").then((data) => {
         return data
-    }).then((data)=>{
+    }).then((data) => {
         mainWindow.webContents.send('crtlist', data);
     });
 };
@@ -166,10 +188,10 @@ ipcMain.handle('saveCrtlist', (event, obj) => {
 
 function addCrtlist(obj) {
     createRow("Files", obj)
-    .then((error)=>{
-        if (error) showErr(error);
-        getCrtlist();
-    });
+        .then((error) => {
+            if (error) showErr(error);
+            getCrtlist();
+        });
 };
 
 ipcMain.handle('updateCrtlist', (event, obj) => {
@@ -178,10 +200,10 @@ ipcMain.handle('updateCrtlist', (event, obj) => {
 
 function updateCrtlist(obj) {
     updateRow("Files", obj)
-    .then((error)=>{
-        if (error) showErr(error);
-        getCrtlist();
-    });
+        .then((error) => {
+            if (error) showErr(error);
+            getCrtlist();
+        });
 };
 
 ipcMain.handle('deleteCrtlist', (event, obj) => {
@@ -190,21 +212,21 @@ ipcMain.handle('deleteCrtlist', (event, obj) => {
 
 function deleteCrtlist(obj) {
     deleteRow("Files", obj)
-    .then((error)=>{
-        if (error) showErr(error);
-        getCrtlist();
-    });
+        .then((error) => {
+            if (error) showErr(error);
+            getCrtlist();
+        });
 };
 
 ipcMain.handle('saveTmpGig', (event, obj) => {
-    saveRow(obj).then(()=>{
+    saveRow(obj).then(() => {
         saveTmpGig(obj);
     });
 });
 
 function saveTmpGig(obj) {
     const { tblName, data } = obj;
-    createTbl(tblName).then(()=>{
+    createTbl(tblName).then(() => {
         data.forEach((element, i) => {
             setTimeout(() => {
                 addTbl(tblName, element);
@@ -215,13 +237,13 @@ function saveTmpGig(obj) {
 };
 
 ipcMain.handle('exeTbl', () => {
-    getSavedFiles().then((data)=>{
+    getSavedFiles().then((data) => {
         mainWindow.webContents.send('exeTblRes', data);
     });
 });
 
 ipcMain.handle('getGigData', (event, obj) => {
-    readGigTable(obj).then((data)=>{
+    readGigTable(obj).then((data) => {
         mainWindow.webContents.send('gigTblRes', data);
     });
 });
