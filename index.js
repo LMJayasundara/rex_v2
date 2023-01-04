@@ -36,7 +36,7 @@ function createWindow() {
         mainWindow.show();
         Menu.setApplicationMenu(null);
         supv_menu = new main_menu(mainWindow);
-        mainWindow.openDevTools()
+        mainWindow.openDevTools();
 
         // checkPort().then((ports)=>{
         //     if(ports.length == 0){
@@ -90,8 +90,10 @@ autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
     const dialogOpts = {
         type: 'info',
         buttons: ['Update', 'Later'],
+        noLink: true,
         title: 'Application Update',
-        message: 'A new version of the application is available.'
+        message: 'A new version of the application is available.',
+        detail: 'The app will be restarted to install the update.'
     };
 
     dialog.showMessageBox(dialogOpts).then((returnValue) => {
@@ -105,6 +107,7 @@ autoUpdater.on('download-progress', (progress) => {
     log_message = `${log_message} (${progress.transferred}/${progress.total})`;
     dialog.showMessageBox({
       type: 'info',
+      noLink: true,
       message: log_message
     });
 });
@@ -113,6 +116,7 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
     const dialogOpts = {
         type: 'info',
         buttons: ['Restart', 'Later'],
+        noLink: true,
         title: 'Application Update',
         message: process.platform === 'win32' ? releaseNotes : releaseName,
         detail: 'A new version has been downloaded. Restart the application to apply the updates.'
