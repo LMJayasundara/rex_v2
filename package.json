@@ -1,6 +1,6 @@
 {
   "name": "braid-app",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "BRAID CUT & MARK MACHINE",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
       "database"
     ],
     "asarUnpack": [
-      "dist/database/main.db"
+      "dist/win-unpacked/resources/database/*"
     ]
   },
   "keywords": [],
@@ -37,6 +37,7 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
+    "electron-progressbar": "^2.0.1",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
     "serialport": "^10.5.0",

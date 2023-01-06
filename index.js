@@ -7,10 +7,14 @@ const { SerialPort } = require('serialport');
 const Store = require('electron-store');
 const store = new Store();
 const { autoUpdater, AppUpdater } = require("electron-updater");
+const ProgressBar = require('electron-progressbar');
 
 //Basic flags
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
+
+// Create the progress bar
+let progressBar;
 
 let mainWindow;
 let supv_menu;
@@ -102,14 +106,22 @@ autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
 });
 
 autoUpdater.on('download-progress', (progress) => {
-    let log_message = `Download speed: ${progress.bytesPerSecond}`;
-    log_message = `${log_message} - Downloaded ${progress.percent}%`;
-    log_message = `${log_message} (${progress.transferred}/${progress.total})`;
-    dialog.showMessageBox({
-      type: 'info',
-      noLink: true,
-      message: log_message
-    });
+    if (!progressBar) {
+        progressBar = new ProgressBar({
+            title: 'Downloading update',
+            text: 'Downloading update...',
+            browserWindow: {
+                parent: mainWindow,
+                modal: true,
+                resizable: false,
+                minimizable: false,
+                maximizable: false
+            }
+        });
+    } else {
+        progressBar.detail = `Downloading complete ${(progress.percent).toFixed()}%`;
+        progressBar.value = (progress.percent).toFixed() / 100;
+    }
 });
 
 autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
