@@ -43,12 +43,6 @@ class main_menu {
                         }
                     },
                     {
-                        label: 'Change Config',
-                        click: function () {
-                            mainWindow.webContents.send('state', "sub32");
-                        }
-                    },
-                    {
                         label: 'Change Password',
                         click: function () {
                             mainWindow.webContents.send('state', "sub33");
@@ -70,7 +64,6 @@ class main_menu {
                             });
                         }
                     },
-                    { role: 'toggleDevTools' },
                     { role: 'togglefullscreen' },
                     { role: 'close' },
                     {
@@ -82,6 +75,25 @@ class main_menu {
                 ]
             },
         
+            {
+                label: 'Developer',
+                submenu: [
+                    { role: 'toggleDevTools' },
+                    {
+                        label: 'Machine Config',
+                        click: function () {
+                            mainWindow.webContents.send('state', "sub32");
+                        }
+                    },
+                    {
+                        label: 'PLC Config',
+                        click: function () {
+                            mainWindow.webContents.send('state', "sub32");
+                        }
+                    }
+                ]
+            },
+
             {
                 label: 'Logout',
                 click: function () {

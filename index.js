@@ -1,13 +1,17 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const main_menu = require('./src/menu');
-const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable } = require('./src/datamodel');
+const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable, dropTbl } = require('./src/datamodel');
 const { checkPort } = require('./src/errors');
 const { SerialPort } = require('serialport');
+const Modbus = require('jsmodbus');
 const Store = require('electron-store');
 const store = new Store();
 const { autoUpdater, AppUpdater } = require("electron-updater");
 const ProgressBar = require('electron-progressbar');
+const { log } = require('console');
+
+app.disableHardwareAcceleration();
 
 //Basic flags
 autoUpdater.autoDownload = false;
@@ -18,6 +22,33 @@ let progressBar;
 
 let mainWindow;
 let supv_menu;
+// let client;
+
+const serialPort = new SerialPort({
+    path: "COM2",
+    baudRate: 19200,
+    dataBits: 8,
+    parity: "even",
+    stopBits: 1,
+    flowControl: false
+}, false);
+
+serialPort.on('error', function (err) {
+    const options = {
+        type: 'error',
+        title: 'Error!',
+        buttons: ['Ok'],
+        message: 'Modbus Connection Error!',
+        detail: err.message
+    };
+    const response = dialog.showMessageBoxSync(mainWindow, options);
+    if (response == 0) {
+        app.relaunch();
+        app.quit(0);
+    }
+});
+
+const client = new Modbus.client.RTU(serialPort, 1);
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -50,29 +81,9 @@ function createWindow() {
 
         ////////////////////////////////////////////////////////////
 
-        // const serialPort = new SerialPort({
-        //     path: "COM",
-        //     baudRate: 19200,
-        //     dataBits: 8,
-        //     parity: "even",
-        //     stopBits: 1,
-        //     flowControl: false
-        // }, false);
-
-        // serialPort.on('error', function (err) {
-        //     mainWindow.webContents.send('state', "err");
-        //     const options = {
-        //         type: 'error',
-        //         title: 'Error!',
-        //         buttons: ['Ok'],
-        //         message: 'Modbus Connection Error!',
-        //         detail: err.message
-        //     };
-        //     const response = dialog.showMessageBoxSync(mainWindow, options);
-        //     console.log(response);
-        //     if (response == 0) {
-        //         app.quit();
-        //     }
+        // client = new Modbus.client.RTU(serialPort, 1, {
+        //     timeout: 5000,
+        //     logLevel: 'debug',
         // });
 
         // mainWindow.setAlwaysOnTop(true, 'floating');
@@ -166,25 +177,57 @@ ipcMain.handle('relaunch', () => {
 
 ipcMain.handle('login', (event, obj) => {
     const { username, password } = obj;
-
-    readTable("Users").then((data) => {
-        return data;
-    }).then((data) => {
-        data.forEach((cred) => {
-            if (cred.User_Name == username && cred.User_Password == password) {
-                const menu = Menu.buildFromTemplate(supv_menu);
-                Menu.setApplicationMenu(menu);
-                mainWindow.webContents.send('state', "sub11");
-            }
+    
+    if(username == '' || password == ''){
+        // dialog.showErrorBox('Error', "Username and Password Required!");
+        dialog.showMessageBox(mainWindow, {
+            type: 'info',
+            title: 'Error',
+            message: 'Username and Password Required!',
+            alwaysOnTop: true
         });
-    });
+    }
+    else{
+        readTable("Users").then((data) => {
+            return data;
+        }).then((data) => {
+            data.forEach((cred) => {
+                if (cred.User_Name == username && cred.User_Password == password) {
+                    const menu = Menu.buildFromTemplate(supv_menu);
+                    Menu.setApplicationMenu(menu);
+                    mainWindow.webContents.send('state', "sub11");
+                }
+                else{
+                    // dialog.showErrorBox('Error', "Invalid Username or Password!");
+                    dialog.showMessageBox(mainWindow, {
+                        type: 'info',
+                        title: 'Error',
+                        message: 'Invalid Username or Password!',
+                        alwaysOnTop: true
+                    });
+                }
+            });
+        });
+    };
 });
 
 function showErr(error) {
-    dialog.showErrorBox('Error', error.message, {
-        detail: error.stack
+    dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'Error',
+        message: error.message,
+        alwaysOnTop: true
     });
 };
+
+ipcMain.handle('error', (event, err) => {
+    dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'Error',
+        message: err,
+        alwaysOnTop: true
+    });
+});
 
 ipcMain.handle('getCrtlist', () => {
     getCrtlist()
@@ -231,6 +274,11 @@ function deleteCrtlist(obj) {
         .then((error) => {
             if (error) showErr(error);
             getCrtlist();
+        })
+        .then(()=>{
+            dropTbl(obj).then((error)=>{
+                if (error) showErr(error);
+            })
         });
 };
 
@@ -261,5 +309,180 @@ ipcMain.handle('exeTbl', () => {
 ipcMain.handle('getGigData', (event, obj) => {
     readGigTable(obj).then((data) => {
         mainWindow.webContents.send('gigTblRes', data);
+    });
+});
+
+/////////////////////////////////// Manual Operations ///////////////////////////////////
+// Main Roll
+ipcMain.handle('upMainRoll', (event, obj) => {
+    console.log('upMainRoll');
+    client.writeSingleCoil(22, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('MainRoll Up Error', error.message);
+    });
+});
+
+ipcMain.handle('downMainRoll', (event, obj) => {
+    console.log('downMainRoll');
+    client.writeSingleCoil(22, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('MainRoll Down Error', error.message);
+    });
+});
+
+// Guid Board
+ipcMain.handle('pullGuidBoard', (event, obj) => {
+    console.log('pullGuidBoard');
+    client.writeSingleCoil(24, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('GuidBoard Pull Error', error.message);
+    });
+});
+
+ipcMain.handle('resetGuidBoard', (event, obj) => {
+    console.log('resetGuidBoard');
+    client.writeSingleCoil(24, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('GuidBoard Reset Error', error.message);
+    });
+});
+
+// Cutter
+ipcMain.handle('btnBladeon', (event, obj) => {
+    console.log('btnBladeon');
+    client.writeSingleCoil(30, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Blade On Error', error.message);
+    });
+});
+
+ipcMain.handle('btnBladeoff', (event, obj) => {
+    console.log('btnBladeoff');
+    client.writeSingleCoil(30, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Blade Off Error', error.message);
+    });
+});
+
+// Braid In
+ipcMain.handle('dragBraidIn', (event, obj) => {
+    console.log('dragBraidIn');
+    client.writeSingleCoil(32, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Braid In Error', error.message);
+    });
+});
+
+ipcMain.handle('resetDragBraidIn', (event, obj) => {
+    console.log('resetDragBraidIn');
+    client.writeSingleCoil(32, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Braid In Reset Error', error.message);
+    });
+});
+
+// Home
+ipcMain.handle('btnactHomeManual', (event, obj) => {
+    console.log('btnactHomeManual');
+});
+
+// Braid Out
+ipcMain.handle('getBraidOut', (event, obj) => {
+    console.log('getBraidOut');
+    client.writeSingleCoil(40, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Braid Out Error', error.message);
+    });
+});
+
+ipcMain.handle('resetGetBraidOut', (event, obj) => {
+    client.writeSingleCoil(40, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Braid Out Reset Error', error.message);
+    });
+});
+
+// Dragging Roll
+ipcMain.handle('releaseDraggingRoll', (event, obj) => {
+    console.log('releaseDraggingRoll');
+    client.writeSingleCoil(28, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Release Dragging Roll Error', error.message);
+    });
+});
+
+ipcMain.handle('setDraggingRoll', (event, obj) => {
+    console.log('setDraggingRoll');
+    client.writeSingleCoil(28, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Set Dragging Roll Error', error.message);
+    });
+});
+
+// Set Heat Seal
+ipcMain.handle('setHeat', (event, obj) => {
+    console.log('setHeat');
+    client.writeSingleCoil(10, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Set Heat Error', error.message);
+    });
+});
+
+ipcMain.handle('resetsetHeat', (event, obj) => {
+    console.log('resetsetHeat');
+    client.writeSingleCoil(10, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Reset Heat Error', error.message);
+    });
+});
+
+// Ink Roll
+ipcMain.handle('runInkRoll', (event, obj) => {
+    console.log('runInkRoll');
+    client.writeSingleCoil(33, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Run Ink Roll Error', error.message);
+    });
+});
+
+ipcMain.handle('stopInkRoll', (event, obj) => {
+    console.log('stopInkRoll');
+    client.writeSingleCoil(33, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Stop Ink Roll Error', error.message);
+    });
+});
+
+// Cutter Fwd
+ipcMain.handle('cutterFwd', (event, obj) => {
+    console.log('cutterFwd');
+    client.writeSingleCoil(12, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Cutter Forward Error', error.message);
+    });
+});
+
+ipcMain.handle('stpCutterFwd', (event, obj) => {
+    console.log('stpCutterFwd');
+    client.writeSingleCoil(12, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Cutter Forward Stop Error', error.message);
+    });
+});
+
+// Cutter Rvs
+ipcMain.handle('cutterRvs', (event, obj) => {
+    console.log('cutterRvs');
+    client.writeSingleCoil(34, true).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Cutter Reverse Error', error.message);
+    });
+});
+
+ipcMain.handle('stpCutterRvs', (event, obj) => {
+    console.log('stpCutterRvs');
+    client.writeSingleCoil(34, false).then((response) => {
+    }).catch((error) => {
+        dialog.showErrorBox('Cutter Reverse Stop Error', error.message);
     });
 });

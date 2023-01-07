@@ -59,7 +59,7 @@
 
         <div class="row" style="margin-top: 5%;">
             <div class="col-md-4" style="background-color: #F5F7FA;">
-                <form>
+                <form id="crtForm">
                     <div class="form-group" style="margin: 2em;">
                         <label style="margin-top: 2em;">File No:</label>
                         <input type="text" class="form-control col-md-6" name="FileNo" id="FileNo11" value="" required>
@@ -74,12 +74,12 @@
                             value="" required>
                     </div>
 
-                    <input type="submit" name='btn' id="btnSave" class="btn btn-primary col-md-3" value="Save"
-                        style="margin-top: 8vh; margin-left: 3.5vw; margin-bottom: 5vh;">
-                    <input type="submit" name='btn' id="btnUpdate" class="btn btn-warning col-md-3" value="Update"
-                        style="margin-top: 8vh; margin-bottom: 5vh;">
-                    <input type="submit" name='btn' id="btnDelete" class="btn btn-danger col-md-3" value="Delete"
-                        style="margin-top: 8vh; margin-bottom: 5vh;">
+                    <div class="d-flex justify-content-center" style="margin-top: 8vh;">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary m-1">
+                        <input type="submit" id="btnUpdate" value="Update" class="btn btn-warning m-1">
+                        <input type="submit" id="btnDelete" value="Delete" class="btn btn-danger m-1">
+                        <input type="submit" id="btnClear" value="Clear" class="btn btn-success m-1">
+                    </div>
                 </form>
             </div>
 
@@ -283,12 +283,9 @@
 
         <div class="col-sm-12 mb-0" style="height: 7vh; background-color: #F5F7FA; margin-top: 0.5em;">
             <div class="d-flex justify-content-center">
-                <input type="submit" name="btn" class="btn btn-primary col-sm-1" style="margin-right: 1em;"
-                    value="Save" onclick="saveTmpTbl()">
-                <input type="submit" name="btn" class="btn btn-primary col-sm-2" style="margin-right: 1em;"
-                    value="Sumbmit to QA">
-                <input type="submit" name="btn" class="btn btn-primary col-sm-1" style="margin-right: 1em;"
-                    value="Delete">
+                <input type="submit" name="btn" class="btn btn-primary col-sm-1 m-1" value="Save" onclick="saveTmpTbl()">
+                <input type="submit" name="btn" class="btn btn-primary col-sm-2 m-1" value="Sumbmit to QA">
+                <input type="submit" name="btn" class="btn btn-primary col-sm-1 m-1" value="Delete" onclick="rmvTmpTbl()">
             </div>
         </div>
     </section>
@@ -446,11 +443,11 @@
         
         <div class="row col-md-12" style="margin-top: 5vh;">
             <div class="col-md-4 d-flex justify-content-center">
-                <button class="col-md-6 btn btn-primary btn-block p-4 rounded-1" id="btnDragBaraidIn">
+                <button class="col-md-6 btn btn-primary btn-block p-4 rounded-1" id="btnDragBraidIn">
                     Drag Braid In
                 </button>
         
-                <button class="col-md-6 btn btn-danger btn-block p-4 rounded-1" id="btnresetDragBaraidIn"
+                <button class="col-md-6 btn btn-danger btn-block p-4 rounded-1" id="btnresetDragBraidIn"
                     style="display: none; margin-top: -0.01em;">
                     Stop Drag Braid In
                 </button>
@@ -463,13 +460,13 @@
             </div>
         
             <div class="col-md-4 d-flex justify-content-center">
-                <button class="col-md-6 btn btn-primary btn-block p-4 rounded-1" id="btnGetBaridOut">
+                <button class="col-md-6 btn btn-primary btn-block p-4 rounded-1" id="btnGetBraidOut">
                     Get Braid Out
                 </button>
         
-                <button class="col-md-6 btn btn-danger btn-block p-4 rounded-1" id="btnresetGetBaridOut"
+                <button class="col-md-6 btn btn-danger btn-block p-4 rounded-1" id="btnresetGetBraidOut"
                     style="display: none; margin-top: -0.01em;">
-                    Stop Drag Braid In
+                    Stop Drag Braid Out
                 </button>
             </div>
         </div>
@@ -507,7 +504,7 @@
             </div>
         </div>
         
-        <div class="row col-md-12" style="margin-top: 5vh;">
+        <!-- <div class="row col-md-12" style="margin-top: 5vh;">
             <div class="col-md-4 d-flex justify-content-center">
                 <button class="col-md-6 btn btn-primary btn-block p-4 rounded-1" id="btnPreprint1">
                     Preprint 1
@@ -540,7 +537,7 @@
                     Stop Preprint 3
                 </button>
             </div>
-        </div>
+        </div> -->
         
         <div class="row col-md-12" style="margin-top: 5vh;">
             <div class="col-md-4 d-flex justify-content-center">
@@ -548,7 +545,7 @@
                     Cutter Forward
                 </button>
         
-                <button class="col-md-6 btn btn-danger btn-block p-4 rounded-1" id="btnStpCutter1"
+                <button class="col-md-6 btn btn-danger btn-block p-4 rounded-1" id="btnStpCutterFwd"
                     style="display: none; margin-top: -0.01em;">
                     Stop Cutter
                 </button>
@@ -561,7 +558,7 @@
                     Cutter Reverse
                 </button>
         
-                <button class="col-md-6 btn btn-danger btn-block p-4 rounded-1" id="btnStpCutter2"
+                <button class="col-md-6 btn btn-danger btn-block p-4 rounded-1" id="btnStpCutterRvs"
                     style="display: none; margin-top: -0.01em;">
                     Stop Cutter
                 </button>

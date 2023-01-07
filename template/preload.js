@@ -1,10 +1,12 @@
+const { log } = require('builder-util');
 const { ipcRenderer } = require('electron');
-var crtlist, itmdes, sltplc, sltclr = null;
+var crtlist, crtForm, itmdes, sltplc, sltclr = null;
 var tmpTbl, exeTbl, gigTbl = null;
 const tmpTblmap = new Map();
 
 window.onload = function () {
     crtlist = document.getElementById("crtlist");
+    crtForm = document.getElementById('crtForm')
     tmpTbl = document.getElementById("tmpTbl");
     itmdes = document.getElementById("itmdes");
     sltplc = document.getElementById("sltplc");
@@ -20,34 +22,38 @@ window.onload = function () {
     btnSave.onclick = renderAddProduct;
     btnUpdate.onclick = renderUpdateProduct;
     btnDelete.onclick = renderDeleteProduct;
+    btnClear.onclick = renderClearProduct;
 };
 
 async function renderGetCrtlist() {
     await ipcRenderer.invoke('getCrtlist');
 };
 
+async function renderClearProduct(){
+    crtForm.reset();
+};
+
 async function renderAddProduct(e) {
     e.preventDefault();
     var FileNo = document.getElementById('FileNo11').value;
-    var ItemDescripition = document.getElementById('ItemDescripition11').value;
+    var ItemDes = document.getElementById('ItemDescripition11').value;
     var DrawingNo = document.getElementById('DrawingNo11').value;
     var DrawingIssue = document.getElementById('DrawingIssue11').value
 
-    const obj = {
-        File_No: FileNo,
-        Item_Des: ItemDescripition,
-        Dra_No: DrawingNo,
-        Dra_Iss: DrawingIssue,
-        Jig_Sts: 'Work'
-    };
-
-    if (FileNo != '' || Item_Des != '' || Dra_No != '' || Dra_Iss != '') {
+    if (FileNo != '' && ItemDes != '' && DrawingNo != '' && DrawingIssue != '') {
+        const obj = {
+            File_No: FileNo,
+            Item_Des: ItemDes,
+            Dra_No: DrawingNo,
+            Dra_Iss: DrawingIssue,
+            Jig_Sts: 'Work'
+        };
         await ipcRenderer.invoke('saveCrtlist', obj);
+        crtForm.reset();
     }
-    FileNo = "";
-    ItemDescripition = "";
-    DrawingNo = "";
-    DrawingIssue = "";
+    else{
+        await ipcRenderer.invoke('error', "All Fields are Required!");
+    }
 };
 
 async function renderUpdateProduct(e) {
@@ -58,7 +64,8 @@ async function renderUpdateProduct(e) {
         Dra_No: document.getElementById('DrawingNo11').value,
         Dra_Iss: document.getElementById('DrawingIssue11').value
     }
-    await ipcRenderer.invoke('updateCrtlist', obj)
+    await ipcRenderer.invoke('updateCrtlist', obj);
+    crtForm.reset();
 };
 
 async function renderDeleteProduct(e) {
@@ -66,7 +73,8 @@ async function renderDeleteProduct(e) {
     const obj = {
         File_No: document.getElementById('FileNo11').value
     }
-    await ipcRenderer.invoke('deleteCrtlist', obj)
+    await ipcRenderer.invoke('deleteCrtlist', obj);
+    crtForm.reset();
 };
 
 function hideall() {
@@ -220,6 +228,7 @@ function fillTbl(mid, gap, bins) {
 };
 
 function renderTmpGig() {
+    tmpTblmap.clear();
     let mid = parseInt(document.getElementById('midpnt').value);
     let gap = parseInt(document.getElementById('kkdis').value);
     let bins = parseInt(document.getElementById('ttlmrk').value);
@@ -299,6 +308,16 @@ async function saveTmpTbl() {
     });
 };
 
+function rmvTmpTbl() {
+    tmpTblmap.clear();
+    const table = document.getElementById('tmpTblx');
+    const tbody = table.querySelector('tbody');
+
+    while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+    }
+};
+
 ipcRenderer.on('exeTblRes', (event, results) => {
     let exeSaveTbl = "";
     results.forEach(element => {
@@ -363,3 +382,178 @@ function relaunch() {
 ipcRenderer.on('version', (event, results) => {
     document.getElementById('Vno').innerHTML = results;
 });
+
+/////////////////////////////////// Manual Operations ///////////////////////////////////
+const btnUpMainRoll = document.getElementById("btnUpMainRoll");
+const btnDownMainRoll = document.getElementById("btnDownMainRoll");
+const btnPullGuidBoard = document.getElementById("btnPullGuidBoard");
+const btnResetGuidBoard = document.getElementById("btnResetGuidBoard");
+const btnBladeon = document.getElementById("btnBladeon");
+const btnBladeoff = document.getElementById("btnBladeoff");
+const btnDragBraidIn = document.getElementById("btnDragBraidIn");
+const btnresetDragBraidIn = document.getElementById("btnresetDragBraidIn");
+const btnactHomeManual = document.getElementById("btnactHomeManual");
+const btnGetBraidOut = document.getElementById("btnGetBraidOut");
+const btnresetGetBraidOut = document.getElementById("btnresetGetBraidOut");
+const btnReleaseDraggingRoll = document.getElementById("btnReleaseDraggingRoll");
+const btnSetDraggingRoll = document.getElementById("btnSetDraggingRoll");
+const btnSetHeat = document.getElementById("btnSetHeat");
+const btnresetSetHeat = document.getElementById("btnresetSetHeat");
+const btnRunInkRoll = document.getElementById("btnRunInkRoll");
+const btnStopInkRoll = document.getElementById("btnStopInkRoll");
+const btnCutterFwd = document.getElementById("btnCutterFwd");
+const btnStpCutterFwd = document.getElementById("btnStpCutterFwd");
+const btnCutterRvs = document.getElementById("btnCutterRvs");
+const btnStpCutterRvs = document.getElementById("btnStpCutterRvs");
+
+// Main Roll
+btnUpMainRoll.addEventListener('click', upMainRoll);
+function upMainRoll() {
+    ipcRenderer.invoke('upMainRoll');
+    btnUpMainRoll.style.display = 'none';
+    btnDownMainRoll.style.display = 'block';
+};
+btnDownMainRoll.addEventListener('click', downMainRoll);
+function downMainRoll() {
+    ipcRenderer.invoke('downMainRoll');
+    btnUpMainRoll.style.display = 'block';
+    btnDownMainRoll.style.display = 'none';
+};
+
+// Guid Board
+btnPullGuidBoard.addEventListener('click', pullGuidBoard);
+function pullGuidBoard() {
+    ipcRenderer.invoke('pullGuidBoard');
+    btnPullGuidBoard.style.display = 'none';
+    btnResetGuidBoard.style.display = 'block';
+};
+btnResetGuidBoard.addEventListener('click', resetGuidBoard);
+function resetGuidBoard() {
+    ipcRenderer.invoke('resetGuidBoard');
+    btnPullGuidBoard.style.display = 'block';
+    btnResetGuidBoard.style.display = 'none';
+};
+
+// Cutter
+btnBladeon.addEventListener('click', bladeon);
+function bladeon() {
+    ipcRenderer.invoke('btnBladeon');
+    btnBladeon.style.display = 'none';
+    btnBladeoff.style.display = 'block';
+};
+btnBladeoff.addEventListener('click', bladeoff);
+function bladeoff() {
+    ipcRenderer.invoke('btnBladeoff');
+    btnBladeon.style.display = 'block';
+    btnBladeoff.style.display = 'none';
+};
+
+// Braid In
+btnDragBraidIn.addEventListener('click', dragBraidIn);
+function dragBraidIn() {
+    ipcRenderer.invoke('dragBraidIn');
+    btnDragBraidIn.style.display = 'none';
+    btnresetDragBraidIn.style.display = 'block';
+};
+btnresetDragBraidIn.addEventListener('click', resetDragBraidIn);
+function resetDragBraidIn() {
+    ipcRenderer.invoke('resetDragBraidIn');
+    btnDragBraidIn.style.display = 'block';
+    btnresetDragBraidIn.style.display = 'none';
+};
+
+// Home
+btnactHomeManual.addEventListener('click', actHomeManual);
+function actHomeManual() {
+    ipcRenderer.invoke('btnactHomeManual');
+    btnactHomeManual.classList.remove('btn-primary');
+    btnactHomeManual.classList.add('btn-danger');
+    setTimeout(() => {
+        btnactHomeManual.classList.remove('btn-danger');
+        btnactHomeManual.classList.add('btn-primary');
+    }, 3000);
+};
+
+// Braid Out
+btnGetBraidOut.addEventListener('click', getBraidOut);
+function getBraidOut() {
+    ipcRenderer.invoke('getBraidOut');
+    btnGetBraidOut.style.display = 'none';
+    btnresetGetBraidOut.style.display = 'block';
+};
+btnresetGetBraidOut.addEventListener('click', resetGetBraidOut);
+function resetGetBraidOut() {
+    ipcRenderer.invoke('resetGetBraidOut');
+    btnGetBraidOut.style.display = 'block';
+    btnresetGetBraidOut.style.display = 'none';
+};
+
+// Dragging Roll
+btnReleaseDraggingRoll.addEventListener('click', releaseDraggingRoll);
+function releaseDraggingRoll() {
+    ipcRenderer.invoke('releaseDraggingRoll');
+    btnReleaseDraggingRoll.style.display = 'none';
+    btnSetDraggingRoll.style.display = 'block';
+};
+btnSetDraggingRoll.addEventListener('click', setDraggingRoll);
+function setDraggingRoll() {
+    ipcRenderer.invoke('setDraggingRoll');
+    btnReleaseDraggingRoll.style.display = 'block';
+    btnSetDraggingRoll.style.display = 'none';
+};
+
+// Set Heat Seal
+btnSetHeat.addEventListener('click', setHeat);
+function setHeat() {
+    ipcRenderer.invoke('setHeat');
+    document.getElementById('btnSetHeat').style.display = 'none';
+    document.getElementById('btnresetSetHeat').style.display = 'block';
+};
+btnresetSetHeat.addEventListener('click', resetsetHeat);
+function resetsetHeat() {
+    ipcRenderer.invoke('resetsetHeat');
+    document.getElementById('btnSetHeat').style.display = 'block';
+    document.getElementById('btnresetSetHeat').style.display = 'none';
+};
+
+// Ink Roll
+btnRunInkRoll.addEventListener('click', runInkRoll);
+function runInkRoll() {
+    ipcRenderer.invoke('runInkRoll');
+    document.getElementById('btnRunInkRoll').style.display = 'none';
+    document.getElementById('btnStopInkRoll').style.display = 'block';
+};
+btnStopInkRoll.addEventListener('click', stopInkRoll);
+function stopInkRoll() {
+    ipcRenderer.invoke('stopInkRoll');
+    document.getElementById('btnRunInkRoll').style.display = 'block';
+    document.getElementById('btnStopInkRoll').style.display = 'none';
+};
+
+// Cutter Fwd
+btnCutterFwd.addEventListener('click', cutterFwd);
+function cutterFwd() {
+    ipcRenderer.invoke('cutterFwd');
+    btnCutterFwd.style.display = 'none';
+    btnStpCutterFwd.style.display = 'block';
+};
+btnStpCutterFwd.addEventListener('click', stpCutterFwd);
+function stpCutterFwd() {
+    ipcRenderer.invoke('stpCutterFwd');
+    btnCutterFwd.style.display = 'block';
+    btnStpCutterFwd.style.display = 'none';
+};
+
+// Cutter Rvs
+btnCutterRvs.addEventListener('click', cutterRvs);
+function cutterRvs() {
+    ipcRenderer.invoke('cutterRvs');
+    btnCutterRvs.style.display = 'none';
+    btnStpCutterRvs.style.display = 'block';
+};
+btnStpCutterRvs.addEventListener('click', stpCutter2);
+function stpCutter2() {
+    ipcRenderer.invoke('stpCutterRvs');
+    btnCutterRvs.style.display = 'block';
+    btnStpCutterRvs.style.display = 'none';
+};
