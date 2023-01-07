@@ -64,6 +64,93 @@
 
 ////////////////////////////////////////////////////////////////////
 
-const numRegisters = 800;
-const values = new Uint16Array(numRegisters).fill(0);
-console.log(values);
+// const numRegisters = 800;
+// const values = new Uint16Array(numRegisters).fill(0);
+// console.log(values);
+
+////////////////////////////////////////////////////////////////////
+
+// async function clearReg() {
+//     return new Promise((resolve, reject) => {
+//       const numRegisters = 100;
+//       const values = new Array(numRegisters).fill(0);
+//       var start = 41387;
+//       for (let i = 0; i < 10; i++) {
+//         client.writeMultipleRegisters(start, values);
+//         start = start + 100;
+//       }
+//       resolve();
+//     }).catch((error) => {
+//         dialog.showErrorBox(`Error`, error.message);
+//     });
+// };
+
+///////////////////
+
+// async function clearReg() {
+//     return new Promise((resolve, reject) => {
+//       const numRegisters = 100;
+//       const values = new Array(numRegisters).fill(0);
+//       var start = 41387;
+//       for (let i = 0; i < 10; i++) {
+//         client.writeMultipleRegisters(start, values)
+//           .then(() => {
+//             // Promise was fulfilled, do nothing
+//           })
+//           .catch((error) => {
+//             // Promise was rejected, handle the error
+//             console.log(error.message);
+//             reject(error);
+//           });
+//         start = start + 100;
+//       }
+//       resolve();
+//     });
+// };
+
+///////////////////
+
+// async function writeCoil(mapReg, mapVal, disReg, disVal) {
+//     return new Promise((resolve, reject) => {
+//         client.writeSingleRegister(mapReg, mapVal).then((response) => {
+//             resolve();
+//         }).catch((error) => {
+//             dialog.showErrorBox(`Error in ${mapReg}`, error.message);
+//         });
+//     }).then(()=>{
+//         client.writeSingleRegister(disReg, disVal).then((response) => {
+//         }).catch((error) => {
+//             dialog.showErrorBox(`Error in ${disReg}`, error.message);
+//         });
+//     }).catch((error) =>{
+//         dialog.showErrorBox(`Error`, error.message);
+//     });
+// };
+
+// ipcMain.handle('exeStart', (event, obj) => {
+//     clearReg().then(()=>{
+//         readGigTable(obj).then((data) => {
+//             // console.log(data);
+//             return data;
+//         })
+//         .then((data) => {
+//             data.forEach(async(element, i) => {
+//                 if (element.clr == 'Green') {
+//                     console.log(i, map[i][0], rotVal[0], dis[i][0], element.gap);
+//                     await writeCoil(map[i][0], rotVal[0], dis[i][0], element.gap);
+//                 }
+//                 else if (element.clr == 'Black') {
+//                     console.log(i, map[i][1], rotVal[1], dis[i][0], element.gap);
+//                     await writeCoil(map[i][1], rotVal[1], dis[i][0], element.gap);
+//                 }
+//                 else if (element.clr == 'Blue') {
+//                     console.log(i, map[i][2], rotVal[2], dis[i][0], element.gap);
+//                     await writeCoil(map[i][2], rotVal[2], dis[i][0], element.gap);
+//                 }
+//                 else {
+//                     console.log('error');
+//                 }
+//             });
+//         });
+//     });
+// });
