@@ -340,6 +340,7 @@ ipcRenderer.on('exeTblRes', (event, results) => {
     exeTbl.innerHTML = exeSaveTbl;
 });
 
+var exeSlcFile = null;
 const mainExeTbl = document.getElementById("mainExeTbl");
 mainExeTbl.addEventListener('click', event => {
     let targetElement = event.target;
@@ -349,6 +350,7 @@ mainExeTbl.addEventListener('click', event => {
     if (targetElement && targetElement.parentNode.tagName === 'TBODY') {
         // const rowIndex = targetElement.rowIndex;
         var obj = targetElement.cells[0].innerHTML;
+        exeSlcFile = targetElement.cells[0].innerHTML;
         ipcRenderer.invoke('getGigData', obj);
 
         document.getElementById("exeDraNo").value = targetElement.cells[4].innerHTML;
@@ -557,3 +559,9 @@ function stpCutter2() {
     btnCutterRvs.style.display = 'block';
     btnStpCutterRvs.style.display = 'none';
 };
+
+/////////////////////////////////// Execute Operations ///////////////////////////////////
+const exeStart = document.getElementById("exeStart");
+exeStart.addEventListener('click', ()=>{
+    ipcRenderer.invoke('exeStart', exeSlcFile);
+});

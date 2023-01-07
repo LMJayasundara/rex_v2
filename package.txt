@@ -43,3 +43,70 @@
     "sqlite3": "^5.1.2"
   }
 }
+////////////////////////////////////////
+
+const val = require('./reg');
+const map = (val.map);
+const dis = (val.dis);
+const rotVal = [150, 150, 150];
+
+function clearReg() {
+    return new Promise((resolve, reject) => {
+      const numRegisters = 100;
+      const values = new Array(numRegisters).fill(0);
+      var start = 41387;
+      for (let i = 0; i < 10; i++) {
+        client.writeMultipleRegisters(start, values);
+        start = start + 100;
+      }
+      resolve();
+    });
+};
+
+async function writeCoil(mapReg, mapVal, disReg, disVal) {
+    return new Promise((resolve, reject) => {
+        client.writeSingleRegister(mapReg, mapVal).then((response) => {
+            console.log(mapReg, mapVal);
+            resolve();
+        }).catch((error) => {
+            dialog.showErrorBox(`MapReg ${mapReg} Error`, error.message);
+        });
+    }).then(()=>{
+        client.writeSingleRegister(disReg, disVal).then((response) => {
+            console.log(disReg, disVal);
+        }).catch((error) => {
+            dialog.showErrorBox(`DisReg ${disReg} Error`, error.message);
+        });
+    });
+};
+
+
+ipcMain.handle('exeStart', (event, obj) => {
+    readGigTable(obj).then((data) => {
+        // console.log(data);
+        return data;
+    })
+    // .then(async(data)=>{
+    //     await clearReg();
+    //     return data;
+    // })
+    .then((data) => {
+        data.forEach(async(element, i) => {
+            if (element.clr == 'Green') {
+                // console.log(i, map[i][0], rotVal[0], dis[i][0], element.gap);
+                await writeCoil(map[i][0], rotVal[0], dis[i][0], element.gap);
+            }
+            else if (element.clr == 'Black') {
+                // console.log(i, map[i][1], rotVal[1], dis[i][0], element.gap);
+                await writeCoil(map[i][1], rotVal[1], dis[i][0], element.gap);
+            }
+            else if (element.clr == 'Blue') {
+                // console.log(i, map[i][2], rotVal[2], dis[i][0], element.gap);
+                await writeCoil(map[i][2], rotVal[2], dis[i][0], element.gap);
+            }
+            else {
+                console.log('error');
+            }
+        });
+    });
+});

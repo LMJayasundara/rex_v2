@@ -48,7 +48,7 @@ serialPort.on('error', function (err) {
     }
 });
 
-const client = new Modbus.client.RTU(serialPort, 1);
+const client = new Modbus.client.RTU(serialPort, 1, 10000);
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -177,8 +177,8 @@ ipcMain.handle('relaunch', () => {
 
 ipcMain.handle('login', (event, obj) => {
     const { username, password } = obj;
-    
-    if(username == '' || password == ''){
+
+    if (username == '' || password == '') {
         // dialog.showErrorBox('Error', "Username and Password Required!");
         dialog.showMessageBox(mainWindow, {
             type: 'info',
@@ -187,7 +187,7 @@ ipcMain.handle('login', (event, obj) => {
             alwaysOnTop: true
         });
     }
-    else{
+    else {
         readTable("Users").then((data) => {
             return data;
         }).then((data) => {
@@ -197,7 +197,7 @@ ipcMain.handle('login', (event, obj) => {
                     Menu.setApplicationMenu(menu);
                     mainWindow.webContents.send('state', "sub11");
                 }
-                else{
+                else {
                     // dialog.showErrorBox('Error', "Invalid Username or Password!");
                     dialog.showMessageBox(mainWindow, {
                         type: 'info',
@@ -275,8 +275,8 @@ function deleteCrtlist(obj) {
             if (error) showErr(error);
             getCrtlist();
         })
-        .then(()=>{
-            dropTbl(obj).then((error)=>{
+        .then(() => {
+            dropTbl(obj).then((error) => {
                 if (error) showErr(error);
             })
         });
@@ -484,5 +484,72 @@ ipcMain.handle('stpCutterRvs', (event, obj) => {
     client.writeSingleCoil(34, false).then((response) => {
     }).catch((error) => {
         dialog.showErrorBox('Cutter Reverse Stop Error', error.message);
+    });
+});
+
+/////////////////////////////////// Execute Operations ///////////////////////////////////
+
+const val = require('./reg');
+const map = (val.map);
+const dis = (val.dis);
+const rotVal = [150, 150, 150];
+
+async function clearReg() {
+    return new Promise((resolve, reject) => {
+      const numRegisters = 100;
+      const values = new Array(numRegisters).fill(0);
+      var start = 41387;
+      for (let i = 0; i < 10; i++) {
+        client.writeMultipleRegisters(start, values);
+        start = start + 100;
+      }
+      resolve();
+    }).catch((error) => {
+        dialog.showErrorBox(`Error`, error.message);
+    });
+};
+
+async function writeCoil(mapReg, mapVal, disReg, disVal) {
+    return new Promise((resolve, reject) => {
+        client.writeSingleRegister(mapReg, mapVal).then((response) => {
+            resolve();
+        }).catch((error) => {
+            dialog.showErrorBox(`Error in ${mapReg}`, error.message);
+        });
+    }).then(()=>{
+        client.writeSingleRegister(disReg, disVal).then((response) => {
+        }).catch((error) => {
+            dialog.showErrorBox(`Error in ${disReg}`, error.message);
+        });
+    }).catch((error) =>{
+        dialog.showErrorBox(`Error`, error.message);
+    });
+};
+
+ipcMain.handle('exeStart', (event, obj) => {
+    clearReg().then(()=>{
+        readGigTable(obj).then((data) => {
+            // console.log(data);
+            return data;
+        })
+        .then((data) => {
+            data.forEach(async(element, i) => {
+                if (element.clr == 'Green') {
+                    console.log(i, map[i][0], rotVal[0], dis[i][0], element.gap);
+                    await writeCoil(map[i][0], rotVal[0], dis[i][0], element.gap);
+                }
+                else if (element.clr == 'Black') {
+                    console.log(i, map[i][1], rotVal[1], dis[i][0], element.gap);
+                    await writeCoil(map[i][1], rotVal[1], dis[i][0], element.gap);
+                }
+                else if (element.clr == 'Blue') {
+                    console.log(i, map[i][2], rotVal[2], dis[i][0], element.gap);
+                    await writeCoil(map[i][2], rotVal[2], dis[i][0], element.gap);
+                }
+                else {
+                    console.log('error');
+                }
+            });
+        });
     });
 });
