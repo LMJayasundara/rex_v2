@@ -79,22 +79,6 @@ function createWindow() {
         //     }
         // });
 
-        ////////////////////////////////////////////////////////////
-
-        // client = new Modbus.client.RTU(serialPort, 1, {
-        //     timeout: 5000,
-        //     logLevel: 'debug',
-        // });
-
-        // mainWindow.setAlwaysOnTop(true, 'floating');
-
-        ////////////////////////////////////////////////////////////
-
-        // store.set('unicorn', 'shan');
-        // console.log(store.get('unicorn'));
-
-        /////////////////////////////////////////////////////////////
-
         mainWindow.webContents.send('version', app.getVersion());
     });
 
@@ -384,6 +368,7 @@ ipcMain.handle('resetDragBraidIn', (event, obj) => {
 // Home
 ipcMain.handle('btnactHomeManual', (event, obj) => {
     console.log('btnactHomeManual');
+    actHome();
 });
 
 // Braid Out
@@ -494,80 +479,239 @@ const map = (val.map);
 const dis = (val.dis);
 const rotVal = [150, 150, 150];
 
-// async function clearReg() {
-//     return new Promise((resolve, reject) => {
-//       const numRegisters = 100;
-//       const values = new Array(numRegisters).fill(0);
-//       var start = 41387;
-//       for (let i = 0; i < 10; i++) {
-//         client.writeMultipleRegisters(start, values);
-//         start = start + 100;
-//       }
-//       resolve();
-//     }).catch((error) => {
-//         dialog.showErrorBox(`Error`, error.message);
-//     });
-// };
-
-function clearReg() {
-    return new Promise((resolve, reject) => {
-      const numRegisters = 100;
-      const values = new Array(numRegisters).fill(0);
-      var start = 41387;
-      for (let i = 0; i < 10; i++) {
-        client.writeMultipleRegisters(start, values)
-          .then(() => {
-            if (i === 9) {
-              resolve();
-            }
-          })
-          .catch((error) => {
-            dialog.showErrorBox(`Registers Cleared Error`, error.message);
-          });
-        start = start + 100;
-      }
-    });
+async function clearReg() {
+    try {
+        const numRegisters = 100;
+        const values = new Array(numRegisters).fill(0);
+        for (let i = 41387; i < 41387 + 1000; i += 100) {
+            await client.writeMultipleRegisters(i, values);
+        }
+    } catch (error) {
+        dialog.showErrorBox(`Registers Cleared Error`, error.message);
+    }
 };
 
 async function writeReg(mapReg, mapVal, disReg, disVal) {
-    return new Promise((resolve, reject) => {
-        client.writeSingleRegister(mapReg, mapVal).then((response) => {
-            resolve();
-        }).catch((error) => {
-            dialog.showErrorBox(`Error in ${mapReg}`, error.message);
-        });
-    }).then(()=>{
-        client.writeSingleRegister(disReg, disVal).then((response) => {
-        }).catch((error) => {
-            dialog.showErrorBox(`Error in ${disReg}`, error.message);
-        });
-    }).catch((error) =>{
-        dialog.showErrorBox(`Registers Write Error`, error.message);
-    });
+    try {
+        await client.writeSingleRegister(mapReg, mapVal);
+        await client.writeSingleRegister(disReg, disVal);
+    } catch (error) {
+        const reg = error.message.includes('mapReg') ? mapReg : disReg;
+        dialog.showErrorBox(`Error in ${reg}`, error.message);
+    }
 };
 
-ipcMain.handle('exeStart', (event, obj) => {
-    clearReg().then(()=>{
-        readGigTable(obj).then((data) => {
-            return data;
-        })
-        .then((data) => {
-            data.forEach(async(element, i) => {
-                if (element.clr == 'Green') {
-                    console.log(i, map[i][0], rotVal[0], dis[i][0], element.gap);
-                    await writeReg(map[i][0], rotVal[0], dis[i][0], element.gap);
-                }
-                else if (element.clr == 'Black') {
-                    console.log(i, map[i][1], rotVal[1], dis[i][0], element.gap);
-                    await writeReg(map[i][1], rotVal[1], dis[i][0], element.gap);
-                }
-                else if (element.clr == 'Blue') {
-                    console.log(i, map[i][2], rotVal[2], dis[i][0], element.gap);
-                    await writeReg(map[i][2], rotVal[2], dis[i][0], element.gap);
-                }
-            });
-        });
-    }).catch((error) => {
+// Start Execution
+async function exeStart(obj) {
+    try {
+        await clearReg();
+        const data = await readGigTable(obj);
+        for (const [i, element] of data.entries()) {
+            let reg;
+            let val;
+            if (element.clr === 'Green') {
+                reg = map[i][0];
+                val = rotVal[0];
+            } else if (element.clr === 'Black') {
+                reg = map[i][1];
+                val = rotVal[1];
+            } else if (element.clr === 'Blue') {
+                reg = map[i][2];
+                val = rotVal[2];
+            }
+            console.log(i, reg, val, dis[i][0], element.gap);
+            await writeReg(reg, val, dis[i][0], element.gap);
+        }
+        store.set('exeStatus', 'start');
+        await client.writeSingleCoil(2000, true);
+    } catch (error) {
         dialog.showErrorBox(`Registers Cleared Error`, error.message);
-    });
+    }
+};
+
+// Start Execution
+ipcMain.handle('exeStart', (_, obj) => {
+    exeStart(obj);
 });
+
+// Stop Execution
+ipcMain.handle('exeStop', (_, obj) => {
+    console.log("stop");
+    store.set('exeStatus', 'stop');
+    // master.writeSingleCoil(400, true)
+    // master.writeSingleCoil(400, false)
+
+    // clear tbl reg data
+    // clear params data
+    // act home mode
+});
+
+// Pause Execution
+ipcMain.handle('exePause', (_, obj) => {
+    console.log("pause");
+    store.set('exeStatus', 'pause');
+    // master.writeSingleCoil(104, true)
+    // master.writeSingleCoil(104, false)
+});
+
+// Pre Print Execution
+ipcMain.handle('exePre', (_, obj) => {
+    console.log("pre");
+    store.set('exeStatus', 'pre');
+});
+
+// Check Status
+ipcMain.handle('exeStatus', () => {
+    console.log(store.get('exeStatus'));
+});
+
+/////////////////////////////////// Mode Operations ///////////////////////////////////
+
+ipcMain.handle('actMode', (event, obj) => {
+    actMode(obj);
+});
+
+async function chkMode() {
+    let M500, M501, sensors = 0;
+    let mode = null;
+    try {
+        // Read M500 and M501
+        const resp = await client.readCoils(500, 2);
+        M500 = resp.response._body._valuesAsArray[0];
+        M501 = resp.response._body._valuesAsArray[1];
+
+        // Read sensors
+        const respSen = await client.readCoils(20482, 4);
+        const data = respSen.response._body._valuesAsArray.slice(0, 4);
+        data.every(element => element === 1) ? sensors = 1 : sensors = 0;
+    } catch (error) {
+        console.log("ChkMode Read Sensor Error", error.message);
+    }
+
+    if (M500 == 0 && M501 == 0 && sensors == 0) {
+        mode = "Normal";
+    } else if (M500 == 1 && M501 == 0) {
+        mode = "Manual";
+    } else if (M500 == 0 && M501 == 1) {
+        mode = "Home";
+    } else if (M500 == 0 && M501 == 0 && sensors == 1) {
+        mode = "Auto";
+    }
+    return mode;
+};
+
+async function waitForCoil1004() {
+    while (true) {
+        const resp = await client.readCoils(1004, 1);
+        const data = resp.response._body._valuesAsArray.slice(0, 1);
+        if (data[0] === 1) {
+            return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+};
+
+// Activate Home Mode
+async function actHome() {
+    try {
+        await client.writeMultipleCoils(500, [0, 1]);
+        mainWindow.webContents.send('state', "sub11");
+        const options = {
+            type: 'info',
+            buttons: ['OK'],
+            defaultId: 0,
+            cancelId: 0,
+            title: 'Home Mode!',
+            message: 'Activate the Home Mode',
+            alwaysOnTop: true
+        };
+        dialog.showMessageBox(mainWindow, options);
+        await waitForCoil1004();
+
+        // Read sensors
+        const respSen = await client.readCoils(20482, 4);
+        const data = respSen.response._body._valuesAsArray.slice(0, 4);
+        const sensors = data.every(element => element === 1) ? 1 : 0;
+
+        if (sensors === 1) {
+            await client.writeMultipleCoils(500, [0, 0]);
+            const options = {
+                type: 'info',
+                buttons: ['OK'],
+                defaultId: 0,
+                cancelId: 0,
+                title: 'Home Mode!',
+                message: 'Completed Home Mode',
+                alwaysOnTop: true
+            };
+            dialog.showMessageBox(mainWindow, options);
+        } else {
+            const options = {
+                type: 'error',
+                buttons: ['OK', 'Cancel'],
+                defaultId: 0,
+                cancelId: 1,
+                title: 'Home Mode!',
+                message: 'Uncompleted Home Mode',
+                detail: 'Sensors are not in position! Do you want to run Home mode again!',
+                alwaysOnTop: true,
+                noLink: true
+            };
+            const returnValue = await dialog.showMessageBox(mainWindow, options);
+            if (returnValue.response === 0) {
+                actHome();
+            } else {
+                await client.writeMultipleCoils(500, [0, 0]);
+                mainWindow.webContents.send('state', "sub11");
+            }
+        }
+    } catch (error) {
+        console.log('Act Home Error', error.message);
+    }
+};
+
+async function actMode(mode) {
+    let curMode = await chkMode();
+
+    if (curMode == "Home") {
+        const options = {
+            type: 'info',
+            buttons: ['OK'],
+            defaultId: 0,
+            cancelId: 0,
+            title: 'Home Mode!',
+            message: 'System in Home Mode',
+            detail: 'Plese wait untill the Home Mode is completed',
+            alwaysOnTop: true
+        };
+        const returnValue = await dialog.showMessageBox(mainWindow, options);
+        if (returnValue.response === 0) {
+            mainWindow.webContents.send('state', "sub11");
+        }
+    }
+    else if (curMode == mode) {
+        return;
+    }
+    else {
+        const options = {
+            type: 'warning',
+            buttons: ['Yes', 'No'],
+            defaultId: 0,
+            cancelId: 1,
+            title: 'Warning!',
+            message: `Machine in ${curMode} Mode`,
+            detail: `Do you want to change it to ${mode} Mode?`
+        };
+
+        const returnValue = await dialog.showMessageBox(mainWindow, options);
+        if (returnValue.response === 0) {
+            if (mode == "Auto") {
+                actHome();
+            } else if (mode == "Manual") {
+                await client.writeMultipleCoils(500, [1, 0]);
+            }
+        } else {
+            mainWindow.webContents.send('state', "sub11");
+        }
+    }
+};

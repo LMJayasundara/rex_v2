@@ -95,6 +95,7 @@ loginBtn.addEventListener('click', function (e) {
     var username = document.getElementById("InputName");
     var password = document.getElementById("InputPassword");
     const obj = { username: username.value, password: password.value };
+    ipcRenderer.invoke("exeStatus");
     ipcRenderer.invoke("login", obj);
     username.value = '';
     password.value = '';
@@ -114,12 +115,14 @@ ipcRenderer.on("state", (event, sts) => {
 
     else if (sts == 'sub21') {
         hideall();
+        ipcRenderer.invoke("actMode", 'Auto');
         ipcRenderer.invoke('exeTbl');
         document.getElementById('execute_container').style.display = 'block';
     }
 
     else if (sts == 'sub31') {
         hideall();
+        ipcRenderer.invoke("actMode", 'Manual');
         document.getElementById('operate_machine_container').style.display = 'block';
     }
 
@@ -562,6 +565,22 @@ function stpCutter2() {
 
 /////////////////////////////////// Execute Operations ///////////////////////////////////
 const exeStart = document.getElementById("exeStart");
+const exeStop = document.getElementById("exeStop");
+const exePre = document.getElementById("exePre");
+const exePause = document.getElementById("exePause");
+
 exeStart.addEventListener('click', ()=>{
     ipcRenderer.invoke('exeStart', exeSlcFile);
+});
+
+exeStop.addEventListener('click', ()=>{
+    ipcRenderer.invoke('exeStop', exeSlcFile);
+});
+
+exePre.addEventListener('click', ()=>{
+    ipcRenderer.invoke('exePre', exeSlcFile);
+});
+
+exePause.addEventListener('click', ()=>{
+    ipcRenderer.invoke('exePause', exeSlcFile);
 });
