@@ -291,3 +291,113 @@ ipcMain.handle('cutterFwd', () => handleAction('cutterFwd'));
 ipcMain.handle('stpCutterFwd', () => handleAction('stpCutterFwd'));
 ipcMain.handle('cutterRvs', () => handleAction('cutterRvs'));
 ipcMain.handle('stpCutterRvs', () => handleAction('stpCutterRvs'));
+
+////////////////////////////////////////////////////////////////////////////////////
+
+// // Start Execution
+// ipcMain.handle('exeStart', async (_, obj) => {
+//     if(store.get('exeStatus') == 'start') {
+//         const options = {
+//             type: 'info',
+//             buttons: ['OK'],
+//             defaultId: 0,
+//             cancelId: 0,
+//             title: 'Execution Mode!',
+//             message: 'Already running a execution!',
+//             detail: 'Wait untill completion or stop the current execution!',
+//             alwaysOnTop: true
+//         };
+//         dialog.showMessageBox(mainWindow, options);
+//     }
+//     else {
+//         const options = {
+//             type: 'warning',
+//             buttons: ['Yes', 'No'],
+//             defaultId: 1,
+//             cancelId: 1,
+//             title: 'Warning!',
+//             message: `Do you want to start the execution?`,
+//             detail: `It will start the execution!`
+//         };
+//         const returnValue = await dialog.showMessageBox(mainWindow, options);
+//         if (returnValue.response === 0) {
+//             if(obj != null){
+//                 await getDetFile(obj).then((data)=>{
+//                     store.set('exeObj', data);
+//                 });
+//                 await exeStart(obj, store.get('exeObj')[0].turn);
+//                 await turnUpdate();
+//             }
+//             else{
+//                 const options = {
+//                     type: 'error',
+//                     buttons: ['OK'],
+//                     defaultId: 0,
+//                     cancelId: 0,
+//                     title: 'Error!',
+//                     message: 'Not Selected!',
+//                     detail: 'Slect table to execute the programe!',
+//                     alwaysOnTop: true,
+//                     noLink: true
+//                 };
+//                 const returnValue = await dialog.showMessageBox(mainWindow, options);
+//             }
+//         }else {
+//             return
+//         }
+//     }
+// });
+
+// // Pre Print Execution
+// ipcMain.handle('exePre', async(_, obj) => {
+//     if(store.get('exeStatus') == 'start') {
+//         const options = {
+//             type: 'info',
+//             buttons: ['OK'],
+//             defaultId: 0,
+//             cancelId: 0,
+//             title: 'Execution Mode!',
+//             message: 'Already running a execution!',
+//             detail: 'Wait untill completion or stop the current execution!',
+//             alwaysOnTop: true
+//         };
+//         dialog.showMessageBox(mainWindow, options);
+//     }
+//     else {
+//         const options = {
+//             type: 'warning',
+//             buttons: ['Yes', 'No'],
+//             defaultId: 1,
+//             cancelId: 1,
+//             title: 'Warning!',
+//             message: `Do you want to start the execution?`,
+//             detail: `It will start the execution!`
+//         };
+//         const returnValue = await dialog.showMessageBox(mainWindow, options);
+//         if (returnValue.response === 0) {
+//             if(obj != null){
+//                 await getDetFile(obj).then((data)=>{
+//                     store.set('exeObj', data);
+//                 });
+//                 await exeStart(obj, 1);
+//                 await turnUpdate();
+//             }
+//             else{
+//                 const options = {
+//                     type: 'error',
+//                     buttons: ['OK'],
+//                     defaultId: 0,
+//                     cancelId: 0,
+//                     title: 'Error!',
+//                     message: 'Not Selected!',
+//                     detail: 'Slect table to execute the programe!',
+//                     alwaysOnTop: true,
+//                     noLink: true
+//                 };
+//                 const returnValue = await dialog.showMessageBox(mainWindow, options);
+//             }
+//         }else {
+//             return
+//         }
+//     }
+// });

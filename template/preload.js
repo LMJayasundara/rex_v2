@@ -343,7 +343,7 @@ ipcRenderer.on('exeTblRes', (event, results) => {
     exeTbl.innerHTML = exeSaveTbl;
 });
 
-var exeSlcFile = null;
+var exeSlcFile;
 const mainExeTbl = document.getElementById("mainExeTbl");
 mainExeTbl.addEventListener('click', event => {
     let targetElement = event.target;
@@ -353,7 +353,7 @@ mainExeTbl.addEventListener('click', event => {
     if (targetElement && targetElement.parentNode.tagName === 'TBODY') {
         // const rowIndex = targetElement.rowIndex;
         var obj = targetElement.cells[0].innerHTML;
-        exeSlcFile = targetElement.cells[0].innerHTML;
+        exeSlcFile = obj;
         ipcRenderer.invoke('getGigData', obj);
 
         document.getElementById("exeDraNo").value = targetElement.cells[4].innerHTML;
@@ -362,6 +362,17 @@ mainExeTbl.addEventListener('click', event => {
         document.getElementById("exeTtlMrk").value = targetElement.cells[7].innerHTML;
         document.getElementById("exePro").value = 0;
     }
+});
+
+ipcRenderer.on('gigTblObj', (event, results) => {
+    document.getElementById("exeDraNo").value = results[0].Dra_No;
+    document.getElementById("exeIss").value = results[0].Dra_Iss;
+    document.getElementById("exeCrdln").value = results[0].len;
+    document.getElementById("exeTtlMrk").value = results[0].mark;
+});
+
+ipcRenderer.on('exePro', (event, results) => {
+    document.getElementById("exePro").value = results;
 });
 
 ipcRenderer.on('gigTblRes', (event, results) => {
@@ -574,13 +585,13 @@ exeStart.addEventListener('click', ()=>{
 });
 
 exeStop.addEventListener('click', ()=>{
-    ipcRenderer.invoke('exeStop', exeSlcFile);
+    ipcRenderer.invoke('exeStop');
 });
 
 exePre.addEventListener('click', ()=>{
     ipcRenderer.invoke('exePre', exeSlcFile);
 });
 
-exePause.addEventListener('click', ()=>{
-    ipcRenderer.invoke('exePause', exeSlcFile);
-});
+// exePause.addEventListener('click', ()=>{
+//     ipcRenderer.invoke('exePause', exeSlcFile);
+// });

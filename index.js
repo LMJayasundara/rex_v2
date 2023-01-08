@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const main_menu = require('./src/menu');
-const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable, dropTbl } = require('./src/datamodel');
+const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable, dropTbl, getDetFile } = require('./src/datamodel');
 const { checkPort } = require('./src/errors');
 const { SerialPort } = require('serialport');
 const Modbus = require('jsmodbus');
@@ -431,9 +431,10 @@ async function writeReg(mapReg, mapVal, disReg, disVal) {
 };
 
 // Start Execution
-async function exeStart(obj) {
+async function exeStart(obj, trn) {
     try {
         await clearReg();
+        await client.writeMultipleRegisters(41090, [0, 0, trn, 0, 1]); // curTrurns, turns, execute ack
         const data = await readGigTable(obj);
         for (const [i, element] of data.entries()) {
             let reg;
@@ -452,52 +453,151 @@ async function exeStart(obj) {
             await writeReg(reg, val, dis[i][0], element.gap);
         }
         store.set('exeStatus', 'start');
+        store.set('tbl', obj);
         await client.writeSingleCoil(2000, true);
     } catch (error) {
         dialog.showErrorBox(`Registers Cleared Error`, error.message);
     }
 };
 
+async function turnUpdate() {
+    while (true) {
+        const resp = await client.readHoldingRegisters(41090, 5);
+        const data = resp.response._body._valuesAsArray.slice(0, 5);
+        console.log(data[0], data[2], data[4]);
+        mainWindow.webContents.send('exePro', `${data[0]} of ${data[2]}`);
+        if ((data[0] === data[2]) || (data[4] === 0)) {
+            console.log("stop");
+            store.set('exeStatus', 'stop');
+            store.set('tbl', null);
+            store.set('exeObj', null);
+            await client.writeMultipleRegisters(41090, [0, 0, 0, 0, 0])
+            return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+};
+
 // Start Execution
-ipcMain.handle('exeStart', (_, obj) => {
-    exeStart(obj);
-});
+ipcMain.handle('exeStart', async (_, obj) => {
+    if (store.get('exeStatus') === 'start') {
+        showErrorDialog('Already running a execution! Wait until completion or stop the current execution!');
+    } else {
+        const shouldStartExecution = await showConfirmationDialog(
+            'Do you want to start the execution? It will start the execution!'
+        );
 
-// Stop Execution
-ipcMain.handle('exeStop', (_, obj) => {
-    console.log("stop");
-    store.set('exeStatus', 'stop');
-    // master.writeSingleCoil(400, true)
-    // master.writeSingleCoil(400, false)
-
-    // clear tbl reg data
-    // clear params data
-    // act home mode
-});
-
-// Pause Execution
-ipcMain.handle('exePause', (_, obj) => {
-    console.log("pause");
-    store.set('exeStatus', 'pause');
-    // master.writeSingleCoil(104, true)
-    // master.writeSingleCoil(104, false)
+        if (shouldStartExecution && obj != null) {
+            const exeObj = await getDetFile(obj);
+            store.set('exeObj', exeObj);
+            await exeStart(obj, exeObj[0].turn);
+            await turnUpdate();
+        } else if (obj == null) {
+            showErrorDialog('Slect table to execute the programe!');
+        }
+    }
 });
 
 // Pre Print Execution
-ipcMain.handle('exePre', (_, obj) => {
-    console.log("pre");
-    store.set('exeStatus', 'pre');
+ipcMain.handle('exePre', async (_, obj) => {
+    if (store.get('exeStatus') === 'start') {
+        showErrorDialog('Already running a execution! Wait until completion or stop the current execution!');
+    } else {
+        const shouldStartExecution = await showConfirmationDialog(
+            'Do you want to start the execution? It will start the execution!'
+        );
+
+        if (shouldStartExecution && obj != null) {
+            const exeObj = await getDetFile(obj);
+            store.set('exeObj', exeObj);
+            await exeStart(obj, 1);
+            await turnUpdate();
+        } else if (obj == null) {
+            showErrorDialog('Slect table to execute the programe!');
+        }
+    }
+});
+
+function showErrorDialog(detail) {
+    const options = {
+        type: 'error',
+        buttons: ['OK'],
+        defaultId: 0,
+        cancelId: 0,
+        title: 'Error!',
+        message: 'Error!',
+        detail,
+        alwaysOnTop: true,
+        noLink: true
+    };
+    dialog.showMessageBox(mainWindow, options);
+}
+
+async function showConfirmationDialog(detail) {
+    const options = {
+        type: 'warning',
+        buttons: ['Yes', 'No'],
+        defaultId: 1,
+        cancelId: 1,
+        title: 'Warning!',
+        message: `Do you want to start the execution?`,
+        detail
+    };
+    const returnValue = await dialog.showMessageBox(mainWindow, options);
+    return returnValue.response === 0;
+}
+
+// Stop Execution
+ipcMain.handle('exeStop', async () => {
+    const options = {
+        type: 'warning',
+        buttons: ['Yes', 'No'],
+        defaultId: 1,
+        cancelId: 1,
+        title: 'Warning!',
+        message: `Do you want to stop the execution?`,
+        detail: `It will stop the execution and activate the Home mode!`
+    };
+    const returnValue = await dialog.showMessageBox(mainWindow, options);
+    if (returnValue.response === 0) {
+        try {
+            await client.writeSingleCoil(400, true);
+            await client.writeMultipleRegisters(41090, [0, 0, 0, 0, 0]);
+            await client.writeSingleCoil(400, false);
+            await clearReg();
+            await actHome();
+        } catch (error) {
+            dialog.showErrorBox(`Execute Stop Error`, error.message);
+        };
+    } else {
+        return
+    }
 });
 
 // Check Status
-ipcMain.handle('exeStatus', () => {
+ipcMain.handle('exeStatus', async () => {
     console.log(store.get('exeStatus'));
+    if (store.get('exeStatus') == 'start') {
+        await turnUpdate();
+    }
 });
 
 /////////////////////////////////// Mode Operations ///////////////////////////////////
 
-ipcMain.handle('actMode', (event, obj) => {
+ipcMain.handle('actMode', async (event, obj) => {
     actMode(obj);
+
+    if (store.get('exeStatus') == 'start') {
+        if (store.get('tbl') != null) {
+            await readGigTable(store.get('tbl')).then((data) => {
+                mainWindow.webContents.send('gigTblRes', data);
+            });
+
+            await getDetFile(store.get('tbl')).then((data) => {
+                mainWindow.webContents.send('gigTblObj', data);
+            });
+        }
+    }
 });
 
 async function chkMode() {
@@ -622,25 +722,43 @@ async function actMode(mode) {
         return;
     }
     else {
-        const options = {
-            type: 'warning',
-            buttons: ['Yes', 'No'],
-            defaultId: 0,
-            cancelId: 1,
-            title: 'Warning!',
-            message: `Machine in ${curMode} Mode`,
-            detail: `Do you want to change it to ${mode} Mode?`
-        };
-
-        const returnValue = await dialog.showMessageBox(mainWindow, options);
-        if (returnValue.response === 0) {
-            if (mode == "Auto") {
-                actHome();
-            } else if (mode == "Manual") {
-                await client.writeMultipleCoils(500, [1, 0]);
+        if (store.get('exeStatus') == 'start') {
+            const options = {
+                type: 'info',
+                buttons: ['OK'],
+                defaultId: 0,
+                cancelId: 0,
+                title: 'Execution Mode!',
+                message: 'System in Execution Mode',
+                detail: 'Plese wait untill the execution is completed',
+                alwaysOnTop: true
+            };
+            const returnValue = await dialog.showMessageBox(mainWindow, options);
+            if (returnValue.response === 0) {
+                mainWindow.webContents.send('state', "sub11");
             }
-        } else {
-            mainWindow.webContents.send('state', "sub11");
+        }
+        else {
+            const options = {
+                type: 'warning',
+                buttons: ['Yes', 'No'],
+                defaultId: 0,
+                cancelId: 1,
+                title: 'Warning!',
+                message: `Machine in ${curMode} Mode`,
+                detail: `Do you want to change it to ${mode} Mode?`
+            };
+
+            const returnValue = await dialog.showMessageBox(mainWindow, options);
+            if (returnValue.response === 0) {
+                if (mode == "Auto") {
+                    actHome();
+                } else if (mode == "Manual") {
+                    await client.writeMultipleCoils(500, [1, 0]);
+                }
+            } else {
+                mainWindow.webContents.send('state', "sub11");
+            }
         }
     }
 };

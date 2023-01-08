@@ -118,6 +118,16 @@ function getSavedFiles() {
     });
 };
 
+function getDetFile(File_No) {
+    return new Promise((resolve) => {
+        let sql = `SELECT * FROM Files WHERE File_No = "${File_No}"`;
+        db.all(sql, function (err, rows) {
+            if (err) throw (err);
+            resolve(rows);
+        });
+    });
+};
+
 function dropTbl(obj) {
     return new Promise((resolve, reject) => {
         let sql = `DROP TABLE ${obj.File_No}`;
@@ -141,5 +151,6 @@ module.exports = {
     saveRow,
     getSavedFiles,
     readGigTable,
-    dropTbl
+    dropTbl,
+    getDetFile
 };
