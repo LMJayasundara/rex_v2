@@ -9,7 +9,7 @@
 // function fillTbl(len, mid, gap, bins) {
 //     let arr = new Array(bins).fill(null);
 //     let midIndex = Math.floor(arr.length / 2);
-  
+
 //     for (let [index, val] of arr.entries()) {
 //       if(index == midIndex){
 //         arr[index] = [index,'Blue', mid];
@@ -31,35 +31,131 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// const val = require('./reg');
-// const map = (val.map);
-// const dis = (val.dis);
+const val = require('./reg');
+const map = (val.map);
+const dis = (val.dis);
+const rotVal = [150, 150, 150];
 
-// var tbl = [
-//   { ind: 0, clr: 'Green', gap: 1 },
-//   { ind: 1, clr: 'Black', gap: 2 },
-//   { ind: 2, clr: 'Black', gap: 3 },
-//   { ind: 3, clr: 'Black', gap: 40 },
-//   { ind: 4, clr: 'Blue', gap: 50 },
-//   { ind: 5, clr: 'Black', gap: 60 },
-//   { ind: 6, clr: 'Black', gap: 4 },
-//   { ind: 7, clr: 'Black', gap: 5 },
-//   { ind: 8, clr: 'Green', gap: 6 }
-// ];
+var tbl = [
+    { ind: 0, clr: 'Green', gap: 1 },
+    { ind: 1, clr: 'Black', gap: 2 },
+    { ind: 2, clr: 'Black', gap: 3 },
+    { ind: 3, clr: 'Black', gap: 40 },
+    { ind: 4, clr: 'Blue', gap: 50 },
+    { ind: 5, clr: 'Black', gap: 60 },
+    { ind: 6, clr: 'Black', gap: 4 },
+    { ind: 7, clr: 'Black', gap: 5 },
+    { ind: 8, clr: 'Green', gap: 6 }
+];
+
+const Green2Black = 1;
+const Black2Blue = 2;
+
+// tbl.forEach((element, i) => {
+//     const lookupTable = {
+//       'Green-Green': element.gap,
+//       'Green-Black': element.gap + Green2Black,
+//       'Green-Blue': element.gap + Green2Black + Black2Blue,
+//       'Black-Green': element.gap - Green2Black,
+//       'Black-Black': element.gap,
+//       'Black-Blue': element.gap + Black2Blue,
+//       'Blue-Green': element.gap - Green2Black - Black2Blue,
+//       'Blue-Black': element.gap - Black2Blue,
+//       'Blue-Blue': element.gap
+//     };
+//     const prevColor = i > 0 ? tbl[i - 1].clr : null;
+//     const key = `${prevColor}-${element.clr}`;
+//     console.log(i, map[i][0], 1, dis[i][0], element.gap, key, lookupTable[key] || element.gap);
+// });
+
+
+for (const [i, element] of tbl.entries()) {
+    let reg;
+    let val;
+
+    const lookupTable = {
+      'Green-Green': element.gap,
+      'Green-Black': element.gap + Green2Black,
+      'Green-Blue': element.gap + Green2Black + Black2Blue,
+      'Black-Green': element.gap - Green2Black,
+      'Black-Black': element.gap,
+      'Black-Blue': element.gap + Black2Blue,
+      'Blue-Green': element.gap - Green2Black - Black2Blue,
+      'Blue-Black': element.gap - Black2Blue,
+      'Blue-Blue': element.gap
+    };
+
+    const prevColor = i > 0 ? tbl[i - 1].clr : null;
+    const key = `${prevColor}-${element.clr}`;
+
+    if (element.clr === 'Green') {
+        reg = map[i][0];
+        val = rotVal[0];
+    } else if (element.clr === 'Black') {
+        reg = map[i][1];
+        val = rotVal[1];
+    } else if (element.clr === 'Blue') {
+        reg = map[i][2];
+        val = rotVal[2];
+    }
+    console.log(i, reg, val, dis[i][0], lookupTable[key] || element.gap);
+}
 
 // tbl.forEach((element, i) => {
 //   if(element.clr == 'Green'){
-//     console.log(i, map[i][0], 1, dis[i][0], element.gap);
+//     console.log(i, map[i][0], 1, dis[i][0], element.gap, tbl[i-1].clr || null, tbl[1].clr);
 //   }
 //   else if(element.clr == 'Black'){
-//     console.log(i, map[i][1], 2, dis[i][0], element.gap);
+//     console.log(i, map[i][1], 2, dis[i][0], element.gap, tbl[i-1].clr || null, tbl[1].clr);
 //   }
 //   else if(element.clr == 'Blue'){
-//     console.log(i, map[i][2], 3, dis[i][0], element.gap);
+//     console.log(i, map[i][2], 3, dis[i][0], element.gap, tbl[i-1].clr || null, tbl[1].clr);
 //   }
 //   else{
 //     console.log('error');
 //   }
+// })
+
+// tbl.forEach((element, i) => {
+//     if (element.clr == 'Green') {
+//         console.log(i, map[i][0], 1, dis[i][0], element.gap, (i > 0 ? tbl[i - 1].clr : null), tbl[i].clr);
+
+//         if((i > 0 ? tbl[i - 1].clr : null) == "Green" && tbl[i].clr == "Black") console.log(element.gap + Green2Black);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Green" && tbl[i].clr == "Blue") console.log(element.gap +(Green2Black+Black2Blue));
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Black" && tbl[i].clr == "Black") console.log(element.gap);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Black" && tbl[i].clr == "Blue") console.log(element.gap + Black2Blue);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Black" && tbl[i].clr == "Green") console.log(element.gap - Green2Black);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Blue" && tbl[i].clr == "Black") console.log(element.gap - Black2Blue);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Blue" && tbl[i].clr == "Green") console.log(element.gap - (Green2Black+Black2Blue));
+//         else console.log(element.gap);
+//     }
+//     else if (element.clr == 'Black') {
+//         console.log(i, map[i][1], 2, dis[i][0], element.gap, (i > 0 ? tbl[i - 1].clr : null), tbl[i].clr);
+
+//         if((i > 0 ? tbl[i - 1].clr : null) == "Green" && tbl[i].clr == "Black") console.log(element.gap + Green2Black);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Green" && tbl[i].clr == "Blue") console.log(element.gap +(Green2Black+Black2Blue));
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Black" && tbl[i].clr == "Black") console.log(element.gap);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Black" && tbl[i].clr == "Blue") console.log(element.gap + Black2Blue);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Black" && tbl[i].clr == "Green") console.log(element.gap - Green2Black);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Blue" && tbl[i].clr == "Black") console.log(element.gap - Black2Blue);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Blue" && tbl[i].clr == "Green") console.log(element.gap - (Green2Black+Black2Blue));
+//         else console.log(element.gap);
+//     }
+//     else if (element.clr == 'Blue') {
+//         console.log(i, map[i][2], 3, dis[i][0], element.gap, (i > 0 ? tbl[i - 1].clr : null), tbl[i].clr);
+
+//         if((i > 0 ? tbl[i - 1].clr : null) == "Green" && tbl[i].clr == "Black") console.log(element.gap + Green2Black);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Green" && tbl[i].clr == "Blue") console.log(element.gap +(Green2Black+Black2Blue));
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Black" && tbl[i].clr == "Black") console.log(element.gap);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Black" && tbl[i].clr == "Blue") console.log(element.gap + Black2Blue);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Black" && tbl[i].clr == "Green") console.log(element.gap - Green2Black);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Blue" && tbl[i].clr == "Black") console.log(element.gap - Black2Blue);
+//         else if((i > 0 ? tbl[i - 1].clr : null) == "Blue" && tbl[i].clr == "Green") console.log(element.gap - (Green2Black+Black2Blue));
+//         else console.log(element.gap);
+//     }
+//     else {
+//         console.log('error');
+//     }
 // })
 
 ////////////////////////////////////////////////////////////////////

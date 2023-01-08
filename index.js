@@ -407,6 +407,8 @@ const val = require('./reg');
 const map = (val.map);
 const dis = (val.dis);
 const rotVal = [150, 150, 150];
+const Green2Black = 1;
+const Black2Blue = 2;
 
 async function clearReg() {
     try {
@@ -436,9 +438,26 @@ async function exeStart(obj, trn) {
         await clearReg();
         await client.writeMultipleRegisters(41090, [0, 0, trn, 0, 1]); // curTrurns, turns, execute ack
         const data = await readGigTable(obj);
+
         for (const [i, element] of data.entries()) {
             let reg;
             let val;
+
+            const lookupTable = {
+                'Green-Green': element.gap,
+                'Green-Black': element.gap + Green2Black,
+                'Green-Blue': element.gap + Green2Black + Black2Blue,
+                'Black-Green': element.gap - Green2Black,
+                'Black-Black': element.gap,
+                'Black-Blue': element.gap + Black2Blue,
+                'Blue-Green': element.gap - Green2Black - Black2Blue,
+                'Blue-Black': element.gap - Black2Blue,
+                'Blue-Blue': element.gap
+            };
+
+            const prevColor = i > 0 ? data[i - 1].clr : null;
+            const key = `${prevColor}-${element.clr}`;
+
             if (element.clr === 'Green') {
                 reg = map[i][0];
                 val = rotVal[0];
@@ -449,9 +468,10 @@ async function exeStart(obj, trn) {
                 reg = map[i][2];
                 val = rotVal[2];
             }
-            console.log(i, reg, val, dis[i][0], element.gap);
-            await writeReg(reg, val, dis[i][0], element.gap);
+            console.log(i, reg, val, dis[i][0], lookupTable[key] || element.gap);
+            await writeReg(reg, val, dis[i][0], lookupTable[key] || element.gap);
         }
+
         store.set('exeStatus', 'start');
         store.set('tbl', obj);
         await client.writeSingleCoil(2000, true);
