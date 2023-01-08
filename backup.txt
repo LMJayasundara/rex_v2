@@ -244,3 +244,50 @@
 //         dialog.showErrorBox('Cutter Reverse Stop Error', error.message);
 //     });
 // });
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+async function handleAction(event, obj, action) {
+  try {
+    switch (action) {
+      case 'upMainRoll':
+        await client.writeSingleCoil(22, true);
+        break;
+      case 'downMainRoll':
+        await client.writeSingleCoil(22, false);
+        break;
+
+      case 'pullGuidBoard':
+        await client.writeSingleCoil(24, true);
+        break;
+      case 'resetGuidBoard':
+        await client.writeSingleCoil(24, false);
+        break;
+      
+    }
+  } catch (error) {
+    dialog.showErrorBox(`${action} Error`, error.message);
+  }
+}
+
+ipcMain.handle('upMainRoll', handleAction.bind(null, 'upMainRoll'));
+ipcMain.handle('downMainRoll', handleAction.bind(null, 'downMainRoll'));
+ipcMain.handle('pullGuidBoard', handleAction.bind(null, 'pullGuidBoard'));
+ipcMain.handle('resetGuidBoard', handleAction.bind(null, 'resetGuidBoard'));
+ipcMain.handle('btnBladeon', () => handleAction('btnBladeon'));
+ipcMain.handle('btnBladeoff', () => handleAction('btnBladeoff'));
+ipcMain.handle('dragBraidIn', () => handleAction('dragBraidIn'));
+ipcMain.handle('resetDragBraidIn', () => handleAction('resetDragBraidIn'));
+ipcMain.handle('btnactHomeManual', () => handleAction('btnactHomeManual'));
+ipcMain.handle('getBraidOut', () => handleAction('getBraidOut'));
+ipcMain.handle('resetGetBraidOut', () => handleAction('resetGetBraidOut'));
+ipcMain.handle('releaseDraggingRoll', () => handleAction('releaseDraggingRoll'));
+ipcMain.handle('setDraggingRoll', () => handleAction('setDraggingRoll'));
+ipcMain.handle('setHeat', () => handleAction('setHeat'));
+ipcMain.handle('resetsetHeat', () => handleAction('resetsetHeat'));
+ipcMain.handle('runInkRoll', () => handleAction('runInkRoll'));
+ipcMain.handle('stopInkRoll', () => handleAction('stopInkRoll'));
+ipcMain.handle('cutterFwd', () => handleAction('cutterFwd'));
+ipcMain.handle('stpCutterFwd', () => handleAction('stpCutterFwd'));
+ipcMain.handle('cutterRvs', () => handleAction('cutterRvs'));
+ipcMain.handle('stpCutterRvs', () => handleAction('stpCutterRvs'));

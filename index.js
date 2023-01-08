@@ -297,180 +297,109 @@ ipcMain.handle('getGigData', (event, obj) => {
 });
 
 /////////////////////////////////// Manual Operations ///////////////////////////////////
-// Main Roll
-ipcMain.handle('upMainRoll', (event, obj) => {
-    console.log('upMainRoll');
-    client.writeSingleCoil(22, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('MainRoll Up Error', error.message);
-    });
-});
+async function handleAction(action) {
+    try {
+        switch (action) {
+            case 'upMainRoll':
+                await client.writeSingleCoil(22, true);
+                break;
+            case 'downMainRoll':
+                await client.writeSingleCoil(22, false);
+                break;
 
-ipcMain.handle('downMainRoll', (event, obj) => {
-    console.log('downMainRoll');
-    client.writeSingleCoil(22, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('MainRoll Down Error', error.message);
-    });
-});
+            case 'pullGuidBoard':
+                await client.writeSingleCoil(24, true);
+                break;
+            case 'resetGuidBoard':
+                await client.writeSingleCoil(24, false);
+                break;
 
-// Guid Board
-ipcMain.handle('pullGuidBoard', (event, obj) => {
-    console.log('pullGuidBoard');
-    client.writeSingleCoil(24, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('GuidBoard Pull Error', error.message);
-    });
-});
+            case 'btnBladeon':
+                await client.writeSingleCoil(30, true);
+                break;
+            case 'btnBladeoff':
+                await client.writeSingleCoil(30, false);
+                break;
 
-ipcMain.handle('resetGuidBoard', (event, obj) => {
-    console.log('resetGuidBoard');
-    client.writeSingleCoil(24, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('GuidBoard Reset Error', error.message);
-    });
-});
+            case 'dragBraidIn':
+                await client.writeSingleCoil(32, true);
+                break;
+            case 'resetDragBraidIn':
+                await client.writeSingleCoil(32, false);
+                break;
 
-// Cutter
-ipcMain.handle('btnBladeon', (event, obj) => {
-    console.log('btnBladeon');
-    client.writeSingleCoil(30, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Blade On Error', error.message);
-    });
-});
+            case 'btnactHomeManual':
+                await actHome();
+                break;
 
-ipcMain.handle('btnBladeoff', (event, obj) => {
-    console.log('btnBladeoff');
-    client.writeSingleCoil(30, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Blade Off Error', error.message);
-    });
-});
+            case 'getBraidOut':
+                await client.writeSingleCoil(40, true);
+                break;
+            case 'resetGetBraidOut':
+                await client.writeSingleCoil(40, false);
+                break;
 
-// Braid In
-ipcMain.handle('dragBraidIn', (event, obj) => {
-    console.log('dragBraidIn');
-    client.writeSingleCoil(32, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Braid In Error', error.message);
-    });
-});
+            case 'releaseDraggingRoll':
+                await client.writeSingleCoil(28, true);
+                break;
+            case 'setDraggingRoll':
+                await client.writeSingleCoil(28, false);
+                break;
 
-ipcMain.handle('resetDragBraidIn', (event, obj) => {
-    console.log('resetDragBraidIn');
-    client.writeSingleCoil(32, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Braid In Reset Error', error.message);
-    });
-});
+            case 'setHeat':
+                await client.writeSingleCoil(10, true);
+                break;
+            case 'resetsetHeat':
+                await client.writeSingleCoil(10, false);
+                break;
 
-// Home
-ipcMain.handle('btnactHomeManual', (event, obj) => {
-    console.log('btnactHomeManual');
-    actHome();
-});
+            case 'runInkRoll':
+                await client.writeSingleCoil(33, true);
+                break;
+            case 'stopInkRoll':
+                await client.writeSingleCoil(33, false);
+                break;
 
-// Braid Out
-ipcMain.handle('getBraidOut', (event, obj) => {
-    console.log('getBraidOut');
-    client.writeSingleCoil(40, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Braid Out Error', error.message);
-    });
-});
+            case 'cutterFwd':
+                await client.writeSingleCoil(12, true);
+                break;
+            case 'stpCutterFwd':
+                await client.writeSingleCoil(12, false);
+                break;
 
-ipcMain.handle('resetGetBraidOut', (event, obj) => {
-    client.writeSingleCoil(40, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Braid Out Reset Error', error.message);
-    });
-});
+            case 'cutterRvs':
+                await client.writeSingleCoil(34, true);
+                break;
+            case 'stpCutterRvs':
+                await client.writeSingleCoil(34, false);
+                break;
+        }
+    } catch (error) {
+        dialog.showErrorBox(`${action} Error`, error.message);
+    }
+};
 
-// Dragging Roll
-ipcMain.handle('releaseDraggingRoll', (event, obj) => {
-    console.log('releaseDraggingRoll');
-    client.writeSingleCoil(28, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Release Dragging Roll Error', error.message);
-    });
-});
-
-ipcMain.handle('setDraggingRoll', (event, obj) => {
-    console.log('setDraggingRoll');
-    client.writeSingleCoil(28, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Set Dragging Roll Error', error.message);
-    });
-});
-
-// Set Heat Seal
-ipcMain.handle('setHeat', (event, obj) => {
-    console.log('setHeat');
-    client.writeSingleCoil(10, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Set Heat Error', error.message);
-    });
-});
-
-ipcMain.handle('resetsetHeat', (event, obj) => {
-    console.log('resetsetHeat');
-    client.writeSingleCoil(10, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Reset Heat Error', error.message);
-    });
-});
-
-// Ink Roll
-ipcMain.handle('runInkRoll', (event, obj) => {
-    console.log('runInkRoll');
-    client.writeSingleCoil(33, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Run Ink Roll Error', error.message);
-    });
-});
-
-ipcMain.handle('stopInkRoll', (event, obj) => {
-    console.log('stopInkRoll');
-    client.writeSingleCoil(33, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Stop Ink Roll Error', error.message);
-    });
-});
-
-// Cutter Fwd
-ipcMain.handle('cutterFwd', (event, obj) => {
-    console.log('cutterFwd');
-    client.writeSingleCoil(12, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Cutter Forward Error', error.message);
-    });
-});
-
-ipcMain.handle('stpCutterFwd', (event, obj) => {
-    console.log('stpCutterFwd');
-    client.writeSingleCoil(12, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Cutter Forward Stop Error', error.message);
-    });
-});
-
-// Cutter Rvs
-ipcMain.handle('cutterRvs', (event, obj) => {
-    console.log('cutterRvs');
-    client.writeSingleCoil(34, true).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Cutter Reverse Error', error.message);
-    });
-});
-
-ipcMain.handle('stpCutterRvs', (event, obj) => {
-    console.log('stpCutterRvs');
-    client.writeSingleCoil(34, false).then((response) => {
-    }).catch((error) => {
-        dialog.showErrorBox('Cutter Reverse Stop Error', error.message);
-    });
-});
+ipcMain.handle('upMainRoll', () => handleAction('upMainRoll'));
+ipcMain.handle('downMainRoll', () => handleAction('downMainRoll'));
+ipcMain.handle('pullGuidBoard', () => handleAction('pullGuidBoard'));
+ipcMain.handle('resetGuidBoard', () => handleAction('resetGuidBoard'));
+ipcMain.handle('btnBladeon', () => handleAction('btnBladeon'));
+ipcMain.handle('btnBladeoff', () => handleAction('btnBladeoff'));
+ipcMain.handle('dragBraidIn', () => handleAction('dragBraidIn'));
+ipcMain.handle('resetDragBraidIn', () => handleAction('resetDragBraidIn'));
+ipcMain.handle('btnactHomeManual', () => handleAction('btnactHomeManual'));
+ipcMain.handle('getBraidOut', () => handleAction('getBraidOut'));
+ipcMain.handle('resetGetBraidOut', () => handleAction('resetGetBraidOut'));
+ipcMain.handle('releaseDraggingRoll', () => handleAction('releaseDraggingRoll'));
+ipcMain.handle('setDraggingRoll', () => handleAction('setDraggingRoll'));
+ipcMain.handle('setHeat', () => handleAction('setHeat'));
+ipcMain.handle('resetsetHeat', () => handleAction('resetsetHeat'));
+ipcMain.handle('runInkRoll', () => handleAction('runInkRoll'));
+ipcMain.handle('stopInkRoll', () => handleAction('stopInkRoll'));
+ipcMain.handle('cutterFwd', () => handleAction('cutterFwd'));
+ipcMain.handle('stpCutterFwd', () => handleAction('stpCutterFwd'));
+ipcMain.handle('cutterRvs', () => handleAction('cutterRvs'));
+ipcMain.handle('stpCutterRvs', () => handleAction('stpCutterRvs'));
 
 /////////////////////////////////// Execute Operations ///////////////////////////////////
 
