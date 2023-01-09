@@ -88,7 +88,7 @@ class main_menu {
                     {
                         label: 'PLC Config',
                         click: function () {
-                            mainWindow.webContents.send('state', "sub32");
+                            mainWindow.webContents.send('state', "sub53");
                         }
                     }
                 ]

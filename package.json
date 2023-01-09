@@ -1,6 +1,6 @@
 {
   "name": "braid-app",
-  "version": "1.0.5",
+  "version": "1.0.1",
   "description": "BRAID CUT & MARK MACHINE",
   "main": "index.js",
   "scripts": {
@@ -23,9 +23,6 @@
     },
     "extraResources": [
       "database"
-    ],
-    "asarUnpack": [
-      "dist/win-unpacked/resources/database/*"
     ]
   },
   "keywords": [],

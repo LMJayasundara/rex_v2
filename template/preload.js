@@ -85,6 +85,7 @@ function hideall() {
     document.getElementById('execute_container').style.display = 'none';
     document.getElementById('operate_machine_container').style.display = 'none';
     document.getElementById('change_config_container').style.display = 'none';
+    document.getElementById('change_plc_container').style.display = 'none';
     document.getElementById('change_password_container').style.display = 'none';
     document.getElementById('about_container').style.display = 'none';
 };
@@ -145,6 +146,11 @@ ipcRenderer.on("state", (event, sts) => {
         hideall();
         document.body.style.background = null;
         document.getElementById('login_container').style.display = 'block';
+    }
+
+    else if (sts == 'sub53') {
+        hideall();
+        document.getElementById('change_plc_container').style.display = 'block';
     }
 
     else if (sts == 'err') {

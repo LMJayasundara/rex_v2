@@ -25,7 +25,7 @@ let supv_menu;
 // let client;
 
 const serialPort = new SerialPort({
-    path: "COM4",
+    path: "COM2",
     baudRate: 19200,
     dataBits: 8,
     parity: "even",
@@ -33,20 +33,20 @@ const serialPort = new SerialPort({
     flowControl: false
 }, false);
 
-serialPort.on('error', function (err) {
-    const options = {
-        type: 'error',
-        title: 'Error!',
-        buttons: ['Ok'],
-        message: 'Modbus Connection Error!',
-        detail: err.message
-    };
-    const response = dialog.showMessageBoxSync(mainWindow, options);
-    if (response == 0) {
-        app.relaunch();
-        app.quit(0);
-    }
-});
+// serialPort.on('error', function (err) {
+//     const options = {
+//         type: 'error',
+//         title: 'Error!',
+//         buttons: ['Ok'],
+//         message: 'Modbus Connection Error!',
+//         detail: err.message
+//     };
+//     const response = dialog.showMessageBoxSync(mainWindow, options);
+//     if (response == 0) {
+//         app.relaunch();
+//         app.quit(0);
+//     }
+// });
 
 const client = new Modbus.client.RTU(serialPort, 1, 10000);
 
@@ -71,7 +71,6 @@ function createWindow() {
         mainWindow.show();
         Menu.setApplicationMenu(null);
         supv_menu = new main_menu(mainWindow);
-        mainWindow.openDevTools();
 
         // checkPort().then((ports)=>{
         //     if(ports.length == 0){
