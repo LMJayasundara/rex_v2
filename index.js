@@ -52,7 +52,7 @@ function createWindow() {
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
         Menu.setApplicationMenu(null);
-        mainWindow.openDevTools();
+        // mainWindow.openDevTools();
         supv_menu = new main_menu(mainWindow);
 
         checkPort().then((ports) => {
