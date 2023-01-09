@@ -31,25 +31,25 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-const val = require('./reg');
-const map = (val.map);
-const dis = (val.dis);
-const rotVal = [150, 150, 150];
+// const val = require('./reg');
+// const map = (val.map);
+// const dis = (val.dis);
+// const rotVal = [150, 150, 150];
 
-var tbl = [
-    { ind: 0, clr: 'Green', gap: 1 },
-    { ind: 1, clr: 'Black', gap: 2 },
-    { ind: 2, clr: 'Black', gap: 3 },
-    { ind: 3, clr: 'Black', gap: 40 },
-    { ind: 4, clr: 'Blue', gap: 50 },
-    { ind: 5, clr: 'Black', gap: 60 },
-    { ind: 6, clr: 'Black', gap: 4 },
-    { ind: 7, clr: 'Black', gap: 5 },
-    { ind: 8, clr: 'Green', gap: 6 }
-];
+// var tbl = [
+//     { ind: 0, clr: 'Green', gap: 1 },
+//     { ind: 1, clr: 'Black', gap: 2 },
+//     { ind: 2, clr: 'Black', gap: 3 },
+//     { ind: 3, clr: 'Black', gap: 40 },
+//     { ind: 4, clr: 'Blue', gap: 50 },
+//     { ind: 5, clr: 'Black', gap: 60 },
+//     { ind: 6, clr: 'Black', gap: 4 },
+//     { ind: 7, clr: 'Black', gap: 5 },
+//     { ind: 8, clr: 'Green', gap: 6 }
+// ];
 
-const Green2Black = 1;
-const Black2Blue = 2;
+// const Green2Black = 1;
+// const Black2Blue = 2;
 
 // tbl.forEach((element, i) => {
 //     const lookupTable = {
@@ -69,37 +69,37 @@ const Black2Blue = 2;
 // });
 
 
-for (const [i, element] of tbl.entries()) {
-    let reg;
-    let val;
+// for (const [i, element] of tbl.entries()) {
+//     let reg;
+//     let val;
 
-    const lookupTable = {
-      'Green-Green': element.gap,
-      'Green-Black': element.gap + Green2Black,
-      'Green-Blue': element.gap + Green2Black + Black2Blue,
-      'Black-Green': element.gap - Green2Black,
-      'Black-Black': element.gap,
-      'Black-Blue': element.gap + Black2Blue,
-      'Blue-Green': element.gap - Green2Black - Black2Blue,
-      'Blue-Black': element.gap - Black2Blue,
-      'Blue-Blue': element.gap
-    };
+//     const lookupTable = {
+//       'Green-Green': element.gap,
+//       'Green-Black': element.gap + Green2Black,
+//       'Green-Blue': element.gap + Green2Black + Black2Blue,
+//       'Black-Green': element.gap - Green2Black,
+//       'Black-Black': element.gap,
+//       'Black-Blue': element.gap + Black2Blue,
+//       'Blue-Green': element.gap - Green2Black - Black2Blue,
+//       'Blue-Black': element.gap - Black2Blue,
+//       'Blue-Blue': element.gap
+//     };
 
-    const prevColor = i > 0 ? tbl[i - 1].clr : null;
-    const key = `${prevColor}-${element.clr}`;
+//     const prevColor = i > 0 ? tbl[i - 1].clr : null;
+//     const key = `${prevColor}-${element.clr}`;
 
-    if (element.clr === 'Green') {
-        reg = map[i][0];
-        val = rotVal[0];
-    } else if (element.clr === 'Black') {
-        reg = map[i][1];
-        val = rotVal[1];
-    } else if (element.clr === 'Blue') {
-        reg = map[i][2];
-        val = rotVal[2];
-    }
-    console.log(i, reg, val, dis[i][0], lookupTable[key] || element.gap);
-}
+//     if (element.clr === 'Green') {
+//         reg = map[i][0];
+//         val = rotVal[0];
+//     } else if (element.clr === 'Black') {
+//         reg = map[i][1];
+//         val = rotVal[1];
+//     } else if (element.clr === 'Blue') {
+//         reg = map[i][2];
+//         val = rotVal[2];
+//     }
+//     console.log(i, reg, val, dis[i][0], lookupTable[key] || element.gap);
+// }
 
 // tbl.forEach((element, i) => {
 //   if(element.clr == 'Green'){

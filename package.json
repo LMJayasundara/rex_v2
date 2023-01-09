@@ -1,6 +1,6 @@
 {
   "name": "braid-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "BRAID CUT & MARK MACHINE",
   "main": "index.js",
   "scripts": {
@@ -38,7 +38,6 @@
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
     "jsmodbus": "^4.0.6",
-    "modbus-serial": "^8.0.9",
     "serialport": "^10.5.0",
     "sqlite3": "^5.1.2"
   }

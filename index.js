@@ -9,7 +9,13 @@ const Store = require('electron-store');
 const store = new Store();
 const { autoUpdater, AppUpdater } = require("electron-updater");
 const ProgressBar = require('electron-progressbar');
-const { log } = require('console');
+
+const val = require('./src/reg');
+const map = (val.map);
+const dis = (val.dis);
+const rotVal = [150, 150, 150];
+const Green2Black = 1;
+const Black2Blue = 2;
 
 app.disableHardwareAcceleration();
 
@@ -402,13 +408,6 @@ ipcMain.handle('cutterRvs', () => handleAction('cutterRvs'));
 ipcMain.handle('stpCutterRvs', () => handleAction('stpCutterRvs'));
 
 /////////////////////////////////// Execute Operations ///////////////////////////////////
-
-const val = require('./reg');
-const map = (val.map);
-const dis = (val.dis);
-const rotVal = [150, 150, 150];
-const Green2Black = 1;
-const Black2Blue = 2;
 
 async function clearReg() {
     try {

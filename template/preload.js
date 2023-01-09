@@ -1,4 +1,3 @@
-const { log } = require('builder-util');
 const { ipcRenderer } = require('electron');
 var crtlist, crtForm, itmdes, sltplc, sltclr = null;
 var tmpTbl, exeTbl, gigTbl = null;
