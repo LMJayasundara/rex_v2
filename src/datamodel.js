@@ -1,8 +1,8 @@
 const { table } = require('console');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-// const dbPath = path.resolve(process.resourcesPath, 'database/main.db').replace('app.asar', 'app.asar.unpacked');
-const dbPath = path.resolve(__dirname, '../database/main.db');
+const dbPath = path.resolve(process.resourcesPath, 'database/main.db').replace('app.asar', 'app.asar.unpacked');
+// const dbPath = path.resolve(__dirname, '../database/main.db');
 let db = new sqlite3.Database(dbPath);
 
 /* CRUD functions: readTable, createRow, updateRow, deleteRow */
