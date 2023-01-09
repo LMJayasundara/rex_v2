@@ -17,18 +17,20 @@ window.onload = function () {
     btnSave = document.getElementById("btnSave");
     btnUpdate = document.getElementById("btnUpdate");
     btnDelete = document.getElementById("btnDelete");
-    renderGetCrtlist();
+    
     btnSave.onclick = renderAddProduct;
     btnUpdate.onclick = renderUpdateProduct;
     btnDelete.onclick = renderDeleteProduct;
     btnClear.onclick = renderClearProduct;
+
+    renderGetCrtlist();
 };
 
 async function renderGetCrtlist() {
     await ipcRenderer.invoke('getCrtlist');
 };
 
-async function renderClearProduct(){
+async function renderClearProduct() {
     crtForm.reset();
 };
 
@@ -50,7 +52,7 @@ async function renderAddProduct(e) {
         await ipcRenderer.invoke('saveCrtlist', obj);
         crtForm.reset();
     }
-    else{
+    else {
         await ipcRenderer.invoke('error', "All Fields are Required!");
     }
 };
@@ -151,12 +153,22 @@ ipcRenderer.on("state", (event, sts) => {
         hideall();
         document.getElementById('change_plc_container').style.display = 'block';
     }
+});
 
-    else if (sts == 'err') {
+ipcRenderer.on("error", (event, sts) => {
+    if (sts.message === "errPort") {
         hideall();
         document.body.style.background = "none";
-        document.getElementById('errDis').innerHTML = "Ports Not Founded!";
+        document.getElementById('errDis').innerHTML = sts.error;
         document.getElementById('error_container').style.display = 'block';
+    }
+
+    else if (sts.message === "emtPort") {
+        hideall();
+        document.body.style.background = "none";
+        document.getElementById('errDis').innerHTML = sts.error;
+        document.getElementById('error_container').style.display = 'block';
+        document.getElementById('enterPort').style.display = 'none';
     }
 });
 
@@ -396,9 +408,11 @@ ipcRenderer.on('gigTblRes', (event, results) => {
     gigTbl.innerHTML = tbl;
 });
 
-function relaunch() {
-    ipcRenderer.invoke('relaunch');
-};
+const button = document.getElementById('relaunch');
+button.addEventListener('click', (event) => {
+    const port = document.getElementById('port').value;
+    ipcRenderer.invoke('relaunch', port);
+});
 
 ipcRenderer.on('version', (event, results) => {
     document.getElementById('Vno').innerHTML = results;
@@ -585,15 +599,15 @@ const exeStop = document.getElementById("exeStop");
 const exePre = document.getElementById("exePre");
 const exePause = document.getElementById("exePause");
 
-exeStart.addEventListener('click', ()=>{
+exeStart.addEventListener('click', () => {
     ipcRenderer.invoke('exeStart', exeSlcFile);
 });
 
-exeStop.addEventListener('click', ()=>{
+exeStop.addEventListener('click', () => {
     ipcRenderer.invoke('exeStop');
 });
 
-exePre.addEventListener('click', ()=>{
+exePre.addEventListener('click', () => {
     ipcRenderer.invoke('exePre', exeSlcFile);
 });
 

@@ -40,11 +40,20 @@
             <h4 class="text-center font-weight-bold" id="errDis"></h4>
         </section>
 
+        <div class="d-flex justify-content-center" style="margin-top: 2vh;">
+            <form class="form-container col-sm-4" id="enterPort">
+                <div class="form-group">
+                    <label for="port">Enter COM Port</label>
+                    <input type="text" class="form-control" id="port" placeholder="COM Port" required>
+                </div>
+            </form>
+        </div>
+
         <div class="row">
             <div class="col-sm-12" style="height: 8vh; margin-top: 1vh;">
                 <div class="d-flex justify-content-center" style="margin-top: 1vh;">
                     <div class="col-sm-1 d-flex justify-content-center">
-                        <button type="button" class="btn btn-primary col-sm-12" onclick="relaunch()">Relaunch</button>
+                        <button type="button" class="btn btn-primary col-sm-12" id="relaunch">Relaunch</button>
                     </div>
                 </div>
             </div>

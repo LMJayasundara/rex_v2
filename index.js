@@ -2,7 +2,6 @@ const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const main_menu = require('./src/menu');
 const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable, dropTbl, getDetFile } = require('./src/datamodel');
-const { checkPort } = require('./src/errors');
 const { SerialPort } = require('serialport');
 const Modbus = require('jsmodbus');
 const Store = require('electron-store');
@@ -28,33 +27,27 @@ let progressBar;
 
 let mainWindow;
 let supv_menu;
-// let client;
+let serialPort;
+let client;
 
-const serialPort = new SerialPort({
-    path: "COM2",
-    baudRate: 19200,
-    dataBits: 8,
-    parity: "even",
-    stopBits: 1,
-    flowControl: false
-}, false);
+// const serialPort = new SerialPort({
+//     path: "COM2",
+//     baudRate: 19200,
+//     dataBits: 8,
+//     parity: "even",
+//     stopBits: 1,
+//     flowControl: false
+// }, false);
 
-serialPort.on('error', function (err) {
-    const options = {
-        type: 'error',
-        title: 'Error!',
-        buttons: ['Ok'],
-        message: 'Modbus Connection Error!',
-        detail: err.message
-    };
-    const response = dialog.showMessageBoxSync(mainWindow, options);
-    if (response == 0) {
-        app.relaunch();
-        app.quit(0);
-    }
-});
+// const client = new Modbus.client.RTU(serialPort, 1, 10000);
 
-const client = new Modbus.client.RTU(serialPort, 1, 10000);
+function checkPort(){
+    return new Promise((resolve) => {
+        SerialPort.list().then((ports)=>{
+            resolve(ports);
+        });
+    });
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -79,11 +72,38 @@ function createWindow() {
         mainWindow.openDevTools();
         supv_menu = new main_menu(mainWindow);
 
-        // checkPort().then((ports)=>{
-        //     if(ports.length == 0){
-        //         mainWindow.webContents.send('state', "err");
-        //     }
-        // });
+        checkPort().then((ports)=>{
+            if(ports.length == 0){
+                mainWindow.webContents.send('error', { message: "emtPort", error: "Not any port detected!" });
+            }
+            else{
+                const storedPort = store.get('port');
+                // Check if any of the ports match the stored port
+                const portIsUsed = ports.some((port) => port === storedPort);
+
+                console.log(portIsUsed);
+
+                if(storedPort === undefined || portIsUsed === true){
+                    mainWindow.webContents.send('error', { message: "errPort", error: "Port undefined or port already in used!" });
+                }
+                else{
+                    serialPort = new SerialPort({
+                        path: storedPort,
+                        baudRate: 19200,
+                        dataBits: 8,
+                        parity: "even",
+                        stopBits: 1,
+                        flowControl: false
+                    }, false);
+    
+                    serialPort.on('error', function (error) {
+                        mainWindow.webContents.send('error', { message: "errPort", error: error.message });
+                    });
+    
+                    client = new Modbus.client.RTU(serialPort, 1, 10000);
+                };
+            }
+        });
 
         mainWindow.webContents.send('version', app.getVersion());
     });
@@ -160,9 +180,13 @@ app.on('window-all-closed', () => {
     }
 });
 
-ipcMain.handle('relaunch', () => {
+ipcMain.handle('relaunch', (event, obj) => {
+    if(obj != ''){
+        console.log(obj);
+        store.set('port', obj);
+    }
     app.relaunch();
-    app.exit(0);
+    app.quit(0);
 });
 
 ipcMain.handle('login', (event, obj) => {
