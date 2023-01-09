@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const main_menu = require('./src/menu');
-const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable, dropTbl, getDetFile } = require('./src/datamodel');
+const { readTable, createRow, updateRow, deleteRow, createTbl, addTbl, saveRow, getSavedFiles, readGigTable, dropTbl, getDetFile, updateRowConfig } = require('./src/datamodel');
 const { SerialPort } = require('serialport');
 const Modbus = require('jsmodbus');
 const Store = require('electron-store');
@@ -12,38 +12,21 @@ const ProgressBar = require('electron-progressbar');
 const val = require('./src/reg');
 const map = (val.map);
 const dis = (val.dis);
-const rotVal = [150, 150, 150];
-const Green2Black = 1;
-const Black2Blue = 2;
-
 app.disableHardwareAcceleration();
 
 //Basic flags
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 
-// Create the progress bar
 let progressBar;
-
 let mainWindow;
 let supv_menu;
 let serialPort;
 let client;
 
-// const serialPort = new SerialPort({
-//     path: "COM2",
-//     baudRate: 19200,
-//     dataBits: 8,
-//     parity: "even",
-//     stopBits: 1,
-//     flowControl: false
-// }, false);
-
-// const client = new Modbus.client.RTU(serialPort, 1, 10000);
-
-function checkPort(){
+function checkPort() {
     return new Promise((resolve) => {
-        SerialPort.list().then((ports)=>{
+        SerialPort.list().then((ports) => {
             resolve(ports);
         });
     });
@@ -72,21 +55,21 @@ function createWindow() {
         mainWindow.openDevTools();
         supv_menu = new main_menu(mainWindow);
 
-        checkPort().then((ports)=>{
-            if(ports.length == 0){
+        checkPort().then((ports) => {
+            if (ports.length == 0) {
                 mainWindow.webContents.send('error', { message: "emtPort", error: "Not any port detected!" });
             }
-            else{
+            else {
                 const storedPort = store.get('port');
                 // Check if any of the ports match the stored port
                 const portIsUsed = ports.some((port) => port === storedPort);
 
                 console.log(portIsUsed);
 
-                if(storedPort === undefined || portIsUsed === true){
+                if (storedPort === undefined || portIsUsed === true) {
                     mainWindow.webContents.send('error', { message: "errPort", error: "Port undefined or port already in used!" });
                 }
-                else{
+                else {
                     serialPort = new SerialPort({
                         path: storedPort,
                         baudRate: 19200,
@@ -95,12 +78,12 @@ function createWindow() {
                         stopBits: 1,
                         flowControl: false
                     }, false);
-    
+
                     serialPort.on('error', function (error) {
                         mainWindow.webContents.send('error', { message: "errPort", error: error.message });
                     });
-    
-                    client = new Modbus.client.RTU(serialPort, 1, 10000);
+
+                    client = new Modbus.client.RTU(serialPort, 1, 3000);
                 };
             }
         });
@@ -181,12 +164,31 @@ app.on('window-all-closed', () => {
 });
 
 ipcMain.handle('relaunch', (event, obj) => {
-    if(obj != ''){
+    if (obj != '') {
         console.log(obj);
         store.set('port', obj);
     }
     app.relaunch();
     app.quit(0);
+});
+
+ipcMain.handle('reqConfig', async() => {
+    let data = await readTable('Config');
+    mainWindow.webContents.send('resConfig', data);
+});
+
+ipcMain.handle('subConf', async(event, obj) => {
+    await updateRowConfig(obj);
+    const options = {
+        type: 'info',
+        buttons: ['OK'],
+        defaultId: 0,
+        cancelId: 0,
+        title: 'Changed Config!',
+        message: 'Config data change successful!',
+        alwaysOnTop: true
+    };
+    dialog.showMessageBox(mainWindow, options);
 });
 
 ipcMain.handle('login', (event, obj) => {
@@ -300,6 +302,16 @@ ipcMain.handle('saveTmpGig', (event, obj) => {
     saveRow(obj).then(() => {
         saveTmpGig(obj);
     });
+    const options = {
+        type: 'info',
+        buttons: ['OK'],
+        defaultId: 0,
+        cancelId: 0,
+        title: 'Save Gig!',
+        message: 'Gig save successful!',
+        alwaysOnTop: true
+    };
+    dialog.showMessageBox(mainWindow, options);
 });
 
 function saveTmpGig(obj) {
@@ -460,6 +472,14 @@ async function exeStart(obj, trn) {
     try {
         await clearReg();
         await client.writeMultipleRegisters(41090, [0, 0, trn, 0, 1]); // curTrurns, turns, execute ack
+
+        const config = await readTable('Config');
+        const rpm1 = config[0].rpm1;
+        const rpm2 = config[0].rpm2;
+        const rmp3 = config[0].rpm3;
+        const Green2Black = config[0].G2B;
+        const Black2Blue = config[0].B2B;
+
         const data = await readGigTable(obj);
 
         for (const [i, element] of data.entries()) {
@@ -483,13 +503,13 @@ async function exeStart(obj, trn) {
 
             if (element.clr === 'Green') {
                 reg = map[i][0];
-                val = rotVal[0];
+                val = rpm1;
             } else if (element.clr === 'Black') {
                 reg = map[i][1];
-                val = rotVal[1];
+                val = rpm2;
             } else if (element.clr === 'Blue') {
                 reg = map[i][2];
-                val = rotVal[2];
+                val = rmp3;
             }
             console.log(i, reg, val, dis[i][0], lookupTable[key] || element.gap);
             await writeReg(reg, val, dis[i][0], lookupTable[key] || element.gap);
@@ -619,7 +639,7 @@ ipcMain.handle('exeStop', async () => {
 
 // Check Status
 ipcMain.handle('exeStatus', async () => {
-    console.log(store.get('exeStatus'));
+    console.log("exeStatus", store.get('exeStatus'));
     if (store.get('exeStatus') == 'start') {
         await turnUpdate();
     }
@@ -782,25 +802,43 @@ async function actMode(mode) {
             }
         }
         else {
-            const options = {
-                type: 'warning',
-                buttons: ['Yes', 'No'],
-                defaultId: 0,
-                cancelId: 1,
-                title: 'Warning!',
-                message: `Machine in ${curMode} Mode`,
-                detail: `Do you want to change it to ${mode} Mode?`
-            };
+            if (curMode != null) {
+                const options = {
+                    type: 'warning',
+                    buttons: ['Yes', 'No'],
+                    defaultId: 0,
+                    cancelId: 1,
+                    title: 'Warning!',
+                    message: `Machine in ${curMode} Mode`,
+                    detail: `Do you want to change it to ${mode} Mode?`
+                };
 
-            const returnValue = await dialog.showMessageBox(mainWindow, options);
-            if (returnValue.response === 0) {
-                if (mode == "Auto") {
-                    actHome();
-                } else if (mode == "Manual") {
-                    await client.writeMultipleCoils(500, [1, 0]);
+                const returnValue = await dialog.showMessageBox(mainWindow, options);
+                if (returnValue.response === 0) {
+                    if (mode == "Auto") {
+                        actHome();
+                    } else if (mode == "Manual") {
+                        await client.writeMultipleCoils(500, [1, 0]);
+                    }
+                } else {
+                    mainWindow.webContents.send('state', "sub11");
                 }
             } else {
-                mainWindow.webContents.send('state', "sub11");
+                const options = {
+                    type: 'error',
+                    buttons: ['OK'],
+                    defaultId: 1,
+                    cancelId: 1,
+                    title: 'Error!',
+                    message: 'Modbus Connection Error',
+                    detail: 'Can not communicate with modbus device!',
+                    alwaysOnTop: true,
+                    noLink: true
+                };
+                const returnValue = await dialog.showMessageBox(mainWindow, options);
+                if (returnValue.response === 0) {
+                    mainWindow.webContents.send('state', "sub11");
+                }
             }
         }
     }

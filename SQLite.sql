@@ -38,9 +38,24 @@ VALUES ('BCM0001', 'Long Mesh Cord', 'D001', 'ISS001', 'Work');
 
 DROP TABLE Files;
 
+-- CREATE TABLE Config
+
+CREATE TABLE Config (
+    id int NOT NULL,
+    rpm1 int default 150,
+    rpm2 int default 150,
+    rpm3 int default 150,
+    G2B int default 0,
+    B2B int default 0,
+    PRIMARY KEY (id)
+);
+
+INSERT INTO Config (id, rpm1, rpm2, rpm3, G2B, B2B)
+VALUES (1, 150, 150, 150, 0, 0);
+
+DROP TABLE Config;
+
 -- Drop TABLES 
 
 DROP TABLE BCM0001;
 DROP TABLE BCM0002;
-
-SELECT * FROM Users;

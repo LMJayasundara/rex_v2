@@ -1,4 +1,5 @@
 const { app, Menu } = require('electron');
+const { autoUpdater, AppUpdater } = require("electron-updater");
 
 class main_menu {
     constructor(mainWindow){
@@ -43,6 +44,12 @@ class main_menu {
                         }
                     },
                     {
+                        label: 'Machine Config',
+                        click: function () {
+                            mainWindow.webContents.send('state', "sub32");
+                        }
+                    },
+                    {
                         label: 'Change Password',
                         click: function () {
                             mainWindow.webContents.send('state', "sub33");
@@ -67,6 +74,12 @@ class main_menu {
                     { role: 'togglefullscreen' },
                     { role: 'close' },
                     {
+                        label: 'Update',
+                        click: function () {
+                            autoUpdater.checkForUpdates()
+                        }
+                    },
+                    {
                         label: 'About',
                         click: function () {
                             mainWindow.webContents.send('state', "sub41");
@@ -79,12 +92,6 @@ class main_menu {
                 label: 'Developer',
                 submenu: [
                     { role: 'toggleDevTools' },
-                    {
-                        label: 'Machine Config',
-                        click: function () {
-                            mainWindow.webContents.send('state', "sub32");
-                        }
-                    },
                     {
                         label: 'PLC Config',
                         click: function () {

@@ -17,7 +17,7 @@ window.onload = function () {
     btnSave = document.getElementById("btnSave");
     btnUpdate = document.getElementById("btnUpdate");
     btnDelete = document.getElementById("btnDelete");
-    
+
     btnSave.onclick = renderAddProduct;
     btnUpdate.onclick = renderUpdateProduct;
     btnDelete.onclick = renderDeleteProduct;
@@ -130,6 +130,7 @@ ipcRenderer.on("state", (event, sts) => {
 
     else if (sts == 'sub32') {
         hideall();
+        ipcRenderer.invoke("reqConfig");
         document.getElementById('change_config_container').style.display = 'block';
     }
 
@@ -170,6 +171,14 @@ ipcRenderer.on("error", (event, sts) => {
         document.getElementById('error_container').style.display = 'block';
         document.getElementById('enterPort').style.display = 'none';
     }
+});
+
+ipcRenderer.on('resConfig', (event, results) => {
+    document.getElementById('rpm1').value = results[0].rpm1;
+    document.getElementById('rpm2').value = results[0].rpm2;
+    document.getElementById('rpm3').value = results[0].rpm3;
+    document.getElementById('G2B').value = results[0].G2B;
+    document.getElementById('B2B').value = results[0].B2B;
 });
 
 ipcRenderer.on('crtlist', (event, results) => {
@@ -408,11 +417,25 @@ ipcRenderer.on('gigTblRes', (event, results) => {
     gigTbl.innerHTML = tbl;
 });
 
-const button = document.getElementById('relaunch');
-button.addEventListener('click', (event) => {
+const relaunch = document.getElementById('relaunch');
+relaunch.addEventListener('click', (event) => {
     const port = document.getElementById('port').value;
     ipcRenderer.invoke('relaunch', port);
 });
+
+const subConf = document.getElementById('subConf');
+subConf.addEventListener('click', (e) => {
+    e.preventDefault();
+    var inputs = document.querySelectorAll("#formId input");
+    const values = [];
+    inputs.forEach((ele, index) => {
+        if (index < inputs.length - 1) {
+            values.push(ele.value);
+        }
+    });
+    ipcRenderer.invoke('subConf', values);
+});
+
 
 ipcRenderer.on('version', (event, results) => {
     document.getElementById('Vno').innerHTML = results;

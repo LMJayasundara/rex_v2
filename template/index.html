@@ -584,38 +584,35 @@
         </nav>
 
         <div class="d-flex justify-content-center" style="margin-top: 5vh;">
-            <form class="form-container col-sm-4">
+            <form class="form-container col-sm-4" id="formId">
                 <div class="form-group">
-                    <label for="rpm1">RPM 1:</label>
-                    <input type="text" class="form-control" id="rpm1" placeholder="Enter RPM 1" required>
+                    <label for="rpm1">Green Roll RPM:</label>
+                    <input type="text" class="form-control" id="rpm1" placeholder="Enter RPM" required>
                 </div>
                 <div class="form-group" style="margin-top: 1vh;">
-                    <label for="rpm2">RPM 2:</label>
-                    <input type="text" class="form-control" id="rpm2" placeholder="Enter RPM 2"
-                        required>
+                    <label for="rpm2">Black Roll RPM:</label>
+                    <input type="text" class="form-control" id="rpm2" placeholder="Enter RPM" required>
                 </div>
                 <div class="form-group" style="margin-top: 1vh;">
-                    <label for="rpm3">RPM 3:</label>
-                    <input type="text" class="form-control" id="rpm3" placeholder="Enter RPM 3"
-                        required>
+                    <label for="rpm3">Blue Roll RPM:</label>
+                    <input type="text" class="form-control" id="rpm3" placeholder="Enter RPM" required>
                 </div>
-                <div class="form-group" style="margin-top: 1vh;">
+                <!-- <div class="form-group" style="margin-top: 1vh;">
                     <label for="ltresh">Length Treshold:</label>
-                    <input type="text" class="form-control" id="ltresh" placeholder="Enter Length Treshold"
+                    <input type="text" class="form-control" id="ltresh" placeholder="Enter Length Treshold" required>
+                </div> -->
+                <div class="form-group" style="margin-top: 1vh;">
+                    <label for="Green2Black">Green to Black Distance:</label>
+                    <input type="text" class="form-control" id="G2B" placeholder="Enter Length"
                         required>
                 </div>
                 <div class="form-group" style="margin-top: 1vh;">
-                    <label for="Green2Black">Green2Black:</label>
-                    <input type="text" class="form-control" id="Green2Black" placeholder="Enter Green2Black Length"
-                        required>
-                </div>
-                <div class="form-group" style="margin-top: 1vh;">
-                    <label for="Black2Blue">Black2Blue:</label>
-                    <input type="text" class="form-control" id="Black2Blue" placeholder="Enter Black2Blue Length"
+                    <label for="Black2Blue">Black to Blue Distance:</label>
+                    <input type="text" class="form-control" id="B2B" placeholder="Enter Length"
                         required>
                 </div>
                 <div class="text-center" style="padding-top: 3vh;">
-                    <input type="submit" name='btn' id="loginBtn" class="btn btn-info col-md-4" value="Change">
+                    <input type="submit" name='btn' id="subConf" class="btn btn-info col-md-4" value="Change">
                 </div>
             </form>
         </div>
