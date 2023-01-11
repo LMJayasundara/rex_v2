@@ -1,6 +1,6 @@
 {
   "name": "braid-app",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "BRAID CUT & MARK MACHINE",
   "main": "index.js",
   "scripts": {

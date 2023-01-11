@@ -463,6 +463,12 @@ const btnCutterFwd = document.getElementById("btnCutterFwd");
 const btnStpCutterFwd = document.getElementById("btnStpCutterFwd");
 const btnCutterRvs = document.getElementById("btnCutterRvs");
 const btnStpCutterRvs = document.getElementById("btnStpCutterRvs");
+const btnPreprint1 = document.getElementById("btnPreprint1");
+const btnStpPreprint1 = document.getElementById("btnStpPreprint1");
+const btnPreprint2 = document.getElementById("btnPreprint2");
+const btnStpPreprint2 = document.getElementById("btnStpPreprint2");
+const btnPreprint3 = document.getElementById("btnPreprint3");
+const btnStpPreprint3 = document.getElementById("btnStpPreprint3");
 
 // Main Roll
 btnUpMainRoll.addEventListener('click', upMainRoll);
@@ -615,6 +621,49 @@ function stpCutter2() {
     btnCutterRvs.style.display = 'block';
     btnStpCutterRvs.style.display = 'none';
 };
+
+// Preprint 1
+btnPreprint1.addEventListener('click', preprint1);
+function preprint1() {
+    ipcRenderer.invoke('preprint1');
+    btnPreprint1.style.display = 'none';
+    btnStpPreprint1.style.display = 'block';
+};
+btnStpPreprint1.addEventListener('click', stpPreprint1);
+function stpPreprint1() {
+    ipcRenderer.invoke('stpPreprint1');
+    btnPreprint1.style.display = 'block';
+    btnStpPreprint1.style.display = 'none';
+};
+
+// Preprint 2
+btnPreprint2.addEventListener('click', preprint2);
+function preprint2() {
+    ipcRenderer.invoke('preprint2');
+    btnPreprint2.style.display = 'none';
+    btnStpPreprint2.style.display = 'block';
+};
+btnStpPreprint2.addEventListener('click', stpPreprint2);
+function stpPreprint2() {
+    ipcRenderer.invoke('stpPreprint2');
+    btnPreprint2.style.display = 'block';
+    btnStpPreprint2.style.display = 'none';
+};
+
+// Preprint 3
+btnPreprint3.addEventListener('click', preprint3);
+function preprint3() {
+    ipcRenderer.invoke('preprint3');
+    btnPreprint3.style.display = 'none';
+    btnStpPreprint3.style.display = 'block';
+};
+btnStpPreprint3.addEventListener('click', stpPreprint3);
+function stpPreprint3() {
+    ipcRenderer.invoke('stpPreprint3');
+    btnPreprint3.style.display = 'block';
+    btnStpPreprint3.style.display = 'none';
+};
+
 
 /////////////////////////////////// Execute Operations ///////////////////////////////////
 const exeStart = document.getElementById("exeStart");

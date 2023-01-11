@@ -172,12 +172,12 @@ ipcMain.handle('relaunch', (event, obj) => {
     app.quit(0);
 });
 
-ipcMain.handle('reqConfig', async() => {
+ipcMain.handle('reqConfig', async () => {
     let data = await readTable('Config');
     mainWindow.webContents.send('resConfig', data);
 });
 
-ipcMain.handle('subConf', async(event, obj) => {
+ipcMain.handle('subConf', async (event, obj) => {
     await updateRowConfig(obj);
     const options = {
         type: 'info',
@@ -415,6 +415,27 @@ async function handleAction(action) {
             case 'stpCutterRvs':
                 await client.writeSingleCoil(34, false);
                 break;
+
+            case 'preprint1':
+                await client.writeSingleCoil(14, true);
+                break;
+            case 'stpPreprint1':
+                await client.writeSingleCoil(14, false);
+                break;
+
+            case 'preprint2':
+                await client.writeSingleCoil(16, true);
+                break;
+            case 'stpPreprint2':
+                await client.writeSingleCoil(16, false);
+                break;
+
+            case 'preprint3':
+                await client.writeSingleCoil(18, true);
+                break;
+            case 'stpPreprint3':
+                await client.writeSingleCoil(18, false);
+                break;
         }
     } catch (error) {
         dialog.showErrorBox(`${action} Error`, error.message);
@@ -442,6 +463,12 @@ ipcMain.handle('cutterFwd', () => handleAction('cutterFwd'));
 ipcMain.handle('stpCutterFwd', () => handleAction('stpCutterFwd'));
 ipcMain.handle('cutterRvs', () => handleAction('cutterRvs'));
 ipcMain.handle('stpCutterRvs', () => handleAction('stpCutterRvs'));
+ipcMain.handle('preprint1', () => handleAction('preprint1'));
+ipcMain.handle('stpPreprint1', () => handleAction('stpPreprint1'));
+ipcMain.handle('preprint2', () => handleAction('preprint2'));
+ipcMain.handle('stpPreprint2', () => handleAction('stpPreprint2'));
+ipcMain.handle('preprint3', () => handleAction('preprint3'));
+ipcMain.handle('stpPreprint3', () => handleAction('stpPreprint3'));
 
 /////////////////////////////////// Execute Operations ///////////////////////////////////
 
