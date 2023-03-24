@@ -1,0 +1,4 @@
+after stop exe home mode not complete
+when execution mode, leave the tab and pop up dialog box notify system in execution mode and jump to the main window
+
+show message box when runing home mode also

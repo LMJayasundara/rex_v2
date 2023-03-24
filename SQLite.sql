@@ -47,11 +47,13 @@ CREATE TABLE Config (
     rpm3 int default 150,
     G2B int default 0,
     B2B int default 0,
+    clen int default 0,
+    htime int default 0,
     PRIMARY KEY (id)
 );
 
-INSERT INTO Config (id, rpm1, rpm2, rpm3, G2B, B2B)
-VALUES (1, 150, 150, 150, 0, 0);
+INSERT INTO Config (id, rpm1, rpm2, rpm3, G2B, B2B, clen, htime)
+VALUES (1, 150, 150, 150, 0, 0, 0, 0);
 
 DROP TABLE Config;
 

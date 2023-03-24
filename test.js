@@ -250,3 +250,176 @@
 //         });
 //     });
 // });
+
+//////////////////////////////////////////////////////////////////////
+
+// async function exeStart(obj, trn) {
+//         const rpm1 = 150
+//         const rpm2 = 150
+//         const rmp3 = 1550
+//         const Green2Black = 3000;
+//         const Black2Blue = 3500;
+
+//         const data = await readTable(obj);
+
+//         for (const [i, element] of data.entries()) {
+//                 let reg;
+//                 let val;
+
+//                 const lookupTable = {
+//                     'Green-Green': element.gap,
+//                     'Green-Black': element.gap + Green2Black,
+//                     'Green-Blue': element.gap + Green2Black + Black2Blue,
+//                     'Black-Green': element.gap - Green2Black,
+//                     'Black-Black': element.gap,
+//                     'Black-Blue': element.gap + Black2Blue,
+//                     'Blue-Green': element.gap - Green2Black - Black2Blue,
+//                     'Blue-Black': element.gap - Black2Blue,
+//                     'Blue-Blue': element.gap
+//                 };
+
+//                 const prevColor = i > 0 ? data[i - 1].clr : null;
+//                 const key = `${prevColor}-${element.clr}`;
+
+//                 if (element.clr === 'Green') {
+//                     reg = map[i][0];
+//                     val = rpm1;
+//                 } else if (element.clr === 'Black') {
+//                     reg = map[i][1];
+//                     val = rpm2;
+//                 } else if (element.clr === 'Blue') {
+//                     reg = map[i][2];
+//                     val = rmp3;
+//                 }
+//                 console.log(i, reg, val, dis[i][0], lookupTable[key] || element.gap);
+//         }
+// };
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+// let register;
+// const regval = [[3512, 4012, 4512],
+// [3514, 4014, 4514],
+// [3516, 4016, 4516],
+// [3518, 4018, 4518],
+// [3520, 4020, 4520],
+// [3522, 4022, 4522],
+// [3524, 4024, 4524],
+// [3526, 4026, 4526],
+// [3528, 4028, 4528],
+// [3530, 4030, 4530],
+// [3532, 4032, 4532],
+// [3534, 4034, 4534],
+// [3536, 4036, 4536],
+// [3538, 4038, 4538],
+// [3540, 4040, 4540]]
+
+// var tbl = [
+//     { ind: 0, clr: 'Green', gap: 0 },
+//     { ind: 1, clr: 'Black', gap: 200 },
+//     { ind: 2, clr: 'Black', gap: 500 },
+//     { ind: 3, clr: 'Blue', gap: 1000 },
+//     { ind: 4, clr: 'Black', gap: 1500 },
+//     { ind: 5, clr: 'Black', gap: 1800 },
+//     { ind: 6, clr: 'Green', gap: 2000 }
+// ];
+
+// const Green2Black = 320;
+// const Black2Blue = 350;
+// let greenindex = 0;
+// let blackindex = 0;
+// let blueindex = 0;
+
+// const lastRow = tbl[tbl.length - 1];
+// const lastRowGap = lastRow.gap;
+// console.log(lastRowGap - Green2Black);
+
+// for (const [i, element] of tbl.entries()) {
+    
+//     const lookupTable = {
+//       'Green-Green': element.gap,
+//       'Green-Black': element.gap + Green2Black,
+//       'Green-Blue': element.gap + Green2Black + Black2Blue,
+//       'Black-Green': element.gap - Green2Black,
+//       'Black-Black': element.gap,
+//       'Black-Blue': element.gap + Black2Blue,
+//       'Blue-Green': element.gap - Green2Black - Black2Blue,
+//       'Blue-Black': element.gap - Black2Blue,
+//       'Blue-Blue': element.gap
+//     };
+//     const prevColor = i > 0 ? tbl[i - 1].clr : null;
+//     const key = `${prevColor}-${element.clr}`;
+
+//     if (element.clr === 'Green') {
+//         register = regval[greenindex][0];
+//         greenindex += 1;
+//     } else if (element.clr === 'Black') {
+//         register = regval[blackindex][1];
+//         blackindex += 1;
+//     } else if (element.clr === 'Blue') {
+//         register = regval[blueindex][2];
+//         blueindex += 1;
+//     }
+//     console.log(i, register, lookupTable[key] || element.gap, element.clr);
+// };
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+const regval = [[3512, 4012, 4512],
+[3514, 4014, 4514],
+[3516, 4016, 4516],
+[3518, 4018, 4518],
+[3520, 4020, 4520],
+[3522, 4022, 4522],
+[3524, 4024, 4524],
+[3526, 4026, 4526],
+[3528, 4028, 4528],
+[3530, 4030, 4530],
+[3532, 4032, 4532],
+[3534, 4034, 4534],
+[3536, 4036, 4536],
+[3538, 4038, 4538],
+[3540, 4040, 4540]]
+
+var tbl = [
+    { ind: 0, clr: 'Green', gap: 0 },
+    { ind: 1, clr: 'Black', gap: 200 },
+    { ind: 2, clr: 'Black', gap: 500 },
+    { ind: 3, clr: 'Blue', gap: 1000 },
+    { ind: 4, clr: 'Black', gap: 1500 },
+    { ind: 5, clr: 'Black', gap: 1800 },
+    { ind: 6, clr: 'Green', gap: 2000 }
+];
+
+const Green2Black = 320;
+const Black2Blue = 350;
+let greenindex = 0;
+let blackindex = 0;
+let blueindex = 0;
+
+const lastRow = tbl[tbl.length - 1];
+const lastRowGap = lastRow.gap;
+console.log(lastRowGap);
+
+for (const [i, element] of tbl.entries()) {
+    let register;
+    let distance = 0;
+    
+    if (element.clr === 'Green') {
+        register = regval[greenindex][0];
+        distance = element.gap;
+        greenindex += 1;
+    } else if (element.clr === 'Black') {
+        register = regval[blackindex][1];
+        distance = element.gap + Green2Black;
+        blackindex += 1;
+    } else if (element.clr === 'Blue') {
+        register = regval[blueindex][2];
+        distance = element.gap + Green2Black + Black2Blue;
+        blueindex += 1;
+    }
+    console.log(i, register, distance, element.clr);
+};

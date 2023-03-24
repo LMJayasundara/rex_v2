@@ -179,6 +179,8 @@ ipcRenderer.on('resConfig', (event, results) => {
     document.getElementById('rpm3').value = results[0].rpm3;
     document.getElementById('G2B').value = results[0].G2B;
     document.getElementById('B2B').value = results[0].B2B;
+    document.getElementById('cutlen').value = results[0].clen;
+    document.getElementById('heatTime').value = results[0].htime;
 });
 
 ipcRenderer.on('crtlist', (event, results) => {
@@ -470,6 +472,11 @@ const btnStpPreprint2 = document.getElementById("btnStpPreprint2");
 const btnPreprint3 = document.getElementById("btnPreprint3");
 const btnStpPreprint3 = document.getElementById("btnStpPreprint3");
 
+const btnSealUpOn = document.getElementById("btnSealUpOn");
+const btnSealUpOff = document.getElementById("btnSealUpOff");
+const btnSealDownOn = document.getElementById("btnSealDownOn");
+const btnSealDownOff = document.getElementById("btnSealDownOff");
+
 // Main Roll
 btnUpMainRoll.addEventListener('click', upMainRoll);
 function upMainRoll() {
@@ -664,12 +671,40 @@ function stpPreprint3() {
     btnStpPreprint3.style.display = 'none';
 };
 
+// btnSealUp
+btnSealUpOn.addEventListener('click', sealUpOn);
+function sealUpOn() {
+    ipcRenderer.invoke('sealUpOn');
+    btnSealUpOn.style.display = 'none';
+    btnSealUpOff.style.display = 'block';
+};
+btnSealUpOff.addEventListener('click', sealUpOff);
+function sealUpOff() {
+    ipcRenderer.invoke('sealUpOff');
+    btnSealUpOn.style.display = 'block';
+    btnSealUpOff.style.display = 'none';
+};
+
+// btnSealDown
+btnSealDownOn.addEventListener('click', sealDownOn);
+function sealDownOn() {
+    ipcRenderer.invoke('sealDownOn');
+    btnSealDownOn.style.display = 'none';
+    btnSealDownOff.style.display = 'block';
+};
+btnSealDownOff.addEventListener('click', sealDownOff);
+function sealDownOff() {
+    ipcRenderer.invoke('sealDownOff');
+    btnSealDownOn.style.display = 'block';
+    btnSealDownOff.style.display = 'none';
+};
 
 /////////////////////////////////// Execute Operations ///////////////////////////////////
 const exeStart = document.getElementById("exeStart");
 const exeStop = document.getElementById("exeStop");
 const exePre = document.getElementById("exePre");
 const exePause = document.getElementById("exePause");
+const exeResume = document.getElementById("exeResume");
 
 exeStart.addEventListener('click', () => {
     ipcRenderer.invoke('exeStart', exeSlcFile);
@@ -683,6 +718,14 @@ exePre.addEventListener('click', () => {
     ipcRenderer.invoke('exePre', exeSlcFile);
 });
 
-// exePause.addEventListener('click', ()=>{
-//     ipcRenderer.invoke('exePause', exeSlcFile);
-// });
+exePause.addEventListener('click', ()=>{
+    ipcRenderer.invoke('exePause');
+    exePause.style.display = 'none';
+    exeResume.style.display = 'block';
+});
+
+exeResume.addEventListener('click', ()=>{
+    ipcRenderer.invoke('exeResume');
+    exePause.style.display = 'block';
+    exeResume.style.display = 'none';
+});

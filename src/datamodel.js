@@ -57,8 +57,8 @@ function updateRow(table, obj) {
 
 function updateRowConfig(obj) {
     return new Promise((resolve) => {
-        const sql = `UPDATE Config SET rpm1=?, rpm2=?, rpm3=?, G2B=?, B2B=? WHERE id=1`;
-        db.run(sql, [obj[0] || 150, obj[1] || 150, obj[2] || 150, obj[3] || 0, obj[4] || 0], function (err){
+        const sql = `UPDATE Config SET rpm1=?, rpm2=?, rpm3=?, G2B=?, B2B=?, clen=?, htime=? WHERE id=1`;
+        db.run(sql, [obj[0] || 150, obj[1] || 150, obj[2] || 150, obj[3] || 0, obj[4] || 0, obj[5] || 0, obj[6] || 0], function (err){
             if (err) resolve(err);
             resolve();
         });
